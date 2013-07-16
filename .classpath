@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="build/.apt_generated"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/erik/android-sdk-linux/platforms/android-10/android.jar"/>
+	<classpathentry kind="lib" path="/home/erik/android-sdk-linux/add-ons/addon-google_apis-google-10/libs/maps.jar"/>
+	<classpathentry kind="lib" path="/home/erik/.titanium/mobilesdk/linux/3.1.1.GA/android/titanium.jar"/>
+	<classpathentry kind="lib" path="/home/erik/.titanium/mobilesdk/linux/3.1.1.GA/android/kroll-common.jar"/>
+	<classpathentry kind="lib" path="/home/erik/.titanium/mobilesdk/linux/3.1.1.GA/android/kroll-apt.jar"/>
+	<classpathentry kind="lib" path="/home/erik/Dropbox/dev/titanium/mapsforge/lib/mapsforge-map-android-0.4.0-SNAPSHOT-jar-with-dependencies.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
