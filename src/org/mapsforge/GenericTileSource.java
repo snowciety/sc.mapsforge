@@ -25,10 +25,6 @@ public class GenericTileSource implements TileSource {
 		this.mMinzoom = minzoom;
 		this.mRequests = parallelrequests;
 	}
-	
-	
-	//http://{s}.tiles.cdn.snowcietyapp.com/snowciety/{z}/{x}/{y}.png
-	//Supply tile URL and domains
 
 	@Override
 	public int getParallelRequestsLimit() {
