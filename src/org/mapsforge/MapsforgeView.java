@@ -10,6 +10,7 @@ import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.proxy.TiViewProxy;
+import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.view.TiUIView;
 import org.mapsforge.core.graphics.Color;
 import org.mapsforge.core.graphics.Paint;
@@ -28,14 +29,17 @@ public class MapsforgeView extends TiUIView {
 	
 	private static final String TAG = "MapsforgeView";
 	private static final String KEY_SCALEBAR = "scalebar";
+	private static final String KEY_CENTER = "center";
+	private static final String KEY_ZOOMLEVEL = "zoomlevel";
+
 	private MapView mMap; //TODO Destroy this reference when View is destroyed!
 	private HashMap<String, TileDownloadLayer> mLayers = new HashMap<String, TileDownloadLayer>();
 
 	public MapsforgeView(TiViewProxy proxy) {
 		super(proxy);		
 		mMap = new MapView(proxy.getActivity());
-		
 		setNativeView(mMap);
+		Log.d(TAG, "MapView created");
 	}
 	
 	@Override
@@ -47,6 +51,18 @@ public class MapsforgeView extends TiUIView {
 		if (props.containsKey(KEY_SCALEBAR)) {
 			mMap.getMapScaleBar().setVisible(props.getBoolean(KEY_SCALEBAR));
 			Log.d(TAG, "scalebar set to " + (props.getBoolean(KEY_SCALEBAR) ? "visible" : "hidden"));
+		}
+		
+		if (props.containsKey(KEY_CENTER)) {
+			Object[] coords = (Object[]) props.get(KEY_CENTER);
+			double lat = TiConvert.toDouble(coords[0]);
+			double lon = TiConvert.toDouble(coords[1]);
+			setCenter(lat, lon);
+		}
+		
+		if (props.containsKey(KEY_ZOOMLEVEL)) {
+			byte zoomlevel = Byte.valueOf(props.getString(KEY_ZOOMLEVEL));
+			setZoomLevel(zoomlevel);
 		}
 	}
 	
@@ -102,10 +118,12 @@ public class MapsforgeView extends TiUIView {
     
     public void setCenter(double lat, double lon) {
     	mMap.getModel().mapViewPosition.setCenter(new LatLong(lat, lon));
+		Log.d(TAG, "center set to " + Double.toString(lat) + " " + Double.toString(lon));
     }
     
     public void setZoomLevel(byte zoomlevel) {
     	mMap.getModel().mapViewPosition.setZoomLevel(zoomlevel);
+		Log.d(TAG, "zoomlevel set to " + Byte.toString(zoomlevel));
     }
     
     public void drawPolyline(List<LatLong> coordinates, Color color) {

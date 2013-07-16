@@ -148,7 +148,6 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	
 	@Kroll.method
 	public void drawPolyline(KrollDict dict) {
-		Log.d(TAG, "dict: " + dict);
 		List<LatLong> geom = new ArrayList<LatLong>();
 		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
 		for(int i = 0; i < coordinates.length; i++) {
@@ -160,9 +159,6 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		Color color = Color.RED;
 		if (dict.containsKey(KEY_COLOR)) {
 			color = Color.valueOf(dict.get(KEY_COLOR).toString().toUpperCase());
-		}
-		for (LatLong l : geom) {
-			Log.d(TAG, l.toString());
 		}
 		mView.drawPolyline(geom, color);
 	}
