@@ -13,6 +13,7 @@ import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.view.TiUIView;
 import org.mapsforge.core.graphics.Color;
+import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Style;
 import org.mapsforge.core.model.LatLong;
@@ -21,6 +22,7 @@ import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.cache.FileSystemTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
+import org.mapsforge.map.layer.overlay.Polygon;
 import org.mapsforge.map.layer.overlay.Polyline;
 
 import android.app.Activity;
@@ -33,11 +35,13 @@ public class MapsforgeView extends TiUIView {
 	private static final String KEY_ZOOMLEVEL = "zoomlevel";
 
 	private MapView mMap; //TODO Destroy this reference when View is destroyed!
+	private GraphicFactory graphicFactory;
 	private HashMap<String, TileDownloadLayer> mLayers = new HashMap<String, TileDownloadLayer>();
 
 	public MapsforgeView(TiViewProxy proxy) {
 		super(proxy);		
-		mMap = new MapView(proxy.getActivity());
+		this.mMap = new MapView(proxy.getActivity());
+		this.graphicFactory = AndroidGraphicFactory.INSTANCE;
 		setNativeView(mMap);
 		Log.d(TAG, "MapView created");
 	}
@@ -79,7 +83,7 @@ public class MapsforgeView extends TiUIView {
 	
 	public void addLayer(Activity activity, String name, String url, String[] subdomains, int parallelrequests, byte maxzoom, byte minzoom){
 		GenericTileSource tileSource = new GenericTileSource(url, subdomains, parallelrequests, maxzoom, minzoom);
-		TileDownloadLayer downloadLayer = new TileDownloadLayer(createTileCache(activity, name), mMap.getModel().mapViewPosition, tileSource, AndroidGraphicFactory.INSTANCE);
+		TileDownloadLayer downloadLayer = new TileDownloadLayer(createTileCache(activity, name), mMap.getModel().mapViewPosition, tileSource, graphicFactory);
 		mMap.getLayerManager().getLayers().add(downloadLayer);
 		mLayers.put(name, downloadLayer);
 		Log.d(TAG, "Added layer " + name + " with url " + url);
@@ -91,7 +95,7 @@ public class MapsforgeView extends TiUIView {
         if (!cacheDirectory.exists()) {
                 cacheDirectory.mkdir();
         }
-        return new FileSystemTileCache(1024, cacheDirectory, AndroidGraphicFactory.INSTANCE);
+        return new FileSystemTileCache(1024, cacheDirectory, graphicFactory);
     }
     
     public void startLayers() {
@@ -127,15 +131,28 @@ public class MapsforgeView extends TiUIView {
     }
     
     public void drawPolyline(List<LatLong> coordinates, Color color) {
-		Paint paintStroke = AndroidGraphicFactory.INSTANCE
-				.createPaint();
+		Paint paintStroke = graphicFactory.createPaint();
 		paintStroke.setStyle(Style.STROKE);
 		paintStroke.setColor(color);
 		paintStroke.setStrokeWidth(5);
 
-		Polyline pl = new Polyline(paintStroke,
-				AndroidGraphicFactory.INSTANCE);
+		Polyline pl = new Polyline(paintStroke,graphicFactory);
 		pl.getLatLongs().addAll(coordinates);
 		mMap.getLayerManager().getLayers().add(pl);
+    }
+    
+    public void drawPolygon(List<LatLong> coordinates, Color fillColor, Color strokeColor, float strokeWidth) {
+    	Paint paintFill = graphicFactory.createPaint();
+    	paintFill.setStyle(Style.FILL);
+    	paintFill.setColor(fillColor);
+    	
+    	Paint paintStroke = graphicFactory.createPaint();
+    	paintStroke.setStyle(Style.STROKE);
+    	paintStroke.setColor(strokeColor);
+    	paintStroke.setStrokeWidth(strokeWidth);
+    	
+    	Polygon pg = new Polygon(paintFill, paintStroke, graphicFactory);
+    	pg.getLatLongs().addAll(coordinates);
+    	mMap.getLayerManager().getLayers().add(pg);
     }
 }

@@ -27,10 +27,17 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	private static final String KEY_MINZOOM = "minzoom";
 	private static final String KEY_COLOR = "color";
 	private static final String KEY_COORDINATES = "coordinates";
-	
+	private static final String KEY_FILLCOLOR = "fillcolor";
+	private static final String KEY_STROKECOLOR = "strokecolor";
+	private static final String KEY_STROKEWIDTH = "strokewidth";
+
 	private static final String TAG = "MapsforgeProxy";
 	private MapsforgeView mView;
 
+	/**
+	 * Overrides
+	 */
+	
 	@Override
 	public TiUIView createView(Activity activity) {
 		Log.d(TAG, "createView called");
@@ -50,6 +57,10 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	public void handleCreationArgs(KrollModule createdInModule, Object[] args) {
 		super.handleCreationArgs(createdInModule, args);
 	}
+	
+	/**
+	 * Exposed Kroll methods
+	 */
 	
 	@Kroll.method
 	public void addLayer(HashMap args) {
@@ -148,14 +159,8 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	
 	@Kroll.method
 	public void drawPolyline(KrollDict dict) {
-		List<LatLong> geom = new ArrayList<LatLong>();
 		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
-		for(int i = 0; i < coordinates.length; i++) {
-			Object[] pair = (Object[]) coordinates[i];
-			double lat = TiConvert.toDouble(pair[0]);
-			double lon = TiConvert.toDouble(pair[1]);
-			geom.add(new LatLong(lat, lon));
-		}
+		List<LatLong> geom = coordinatesToList(coordinates);
 		Color color = Color.RED;
 		if (dict.containsKey(KEY_COLOR)) {
 			color = Color.valueOf(dict.get(KEY_COLOR).toString().toUpperCase());
@@ -164,14 +169,41 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	}
 	
 	@Kroll.method
-	public void hey() {
-		Log.d(TAG, "Hey!");
+	public void drawPolygon(KrollDict dict) {
+		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
+		List<LatLong> geom = coordinatesToList(coordinates);
+		Color fillColor = Color.BLUE;
+		Color strokeColor = Color.BLACK;
+		float strokeWidth = 2;
+		if (dict.containsKey(KEY_FILLCOLOR)) {
+			fillColor = Color.valueOf(dict.get(KEY_FILLCOLOR).toString().toUpperCase());
+		}
+		if (dict.containsKey(KEY_STROKECOLOR)) {
+			strokeColor = Color.valueOf(dict.get(KEY_STROKECOLOR).toString().toUpperCase());
+		}
+		if (dict.containsKey(KEY_STROKEWIDTH)) {
+			strokeWidth = TiConvert.toFloat(dict.get(KEY_STROKEWIDTH));
+		}
+		mView.drawPolygon(geom, fillColor, strokeColor, strokeWidth);
 	}
 	
-	
+	/**
+	 * Private methods
+	 */
 	
 	private boolean validUrl(String url) {
 		return url.matches(".*\\{z\\}.*\\{x\\}.*\\{y\\}.*");
+	}
+	
+	private List<LatLong> coordinatesToList(Object[] coordinates) {
+		List<LatLong> geom = new ArrayList<LatLong>();
+		for(int i = 0; i < coordinates.length; i++) {
+			Object[] pair = (Object[]) coordinates[i];
+			double lat = TiConvert.toDouble(pair[0]);
+			double lon = TiConvert.toDouble(pair[1]);
+			geom.add(new LatLong(lat, lon));
+		}
+		return geom;
 	}
 
 }
