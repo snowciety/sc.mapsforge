@@ -145,11 +145,11 @@ public class MapsforgeView extends TiUIView {
 		Log.d(TAG, "zoomlevel set to " + Byte.toString(zoomlevel));
     }
     
-    public void drawPolyline(List<LatLong> coordinates, Color color) {
+    public void drawPolyline(List<LatLong> coordinates, Color color, float strokeWidth) {
 		Paint paintStroke = mGraphicFactory.createPaint();
 		paintStroke.setStyle(Style.STROKE);
 		paintStroke.setColor(color);
-		paintStroke.setStrokeWidth(5);
+		paintStroke.setStrokeWidth(strokeWidth);
 
 		Polyline pl = new Polyline(paintStroke,mGraphicFactory);
 		pl.getLatLongs().addAll(coordinates);
