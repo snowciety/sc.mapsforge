@@ -208,6 +208,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		if (dict.containsKey(KEY_ICONPATH)) {
 			iconPath = dict.get(KEY_ICONPATH).toString();
 			iconPath = iconPath.replaceAll("file://", "");
+			iconPath = iconPath.trim();
 		} else {
 			Log.e(TAG, "Required parameter iconPath could not be found! Aborting...");
 			return;
