@@ -164,21 +164,34 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	
 	@Kroll.method
 	public void drawPolyline(KrollDict dict) {
+		if (!dict.containsKey(KEY_COORDINATES)) {
+			Log.e(TAG, "Required parameter 'coordinates' is missing! Aborting...");
+			return;
+		}
 		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
 		List<LatLong> geom = coordinatesToList(coordinates);
 		Color color = Color.RED;
+		float strokeWidth = 5;
+		
 		if (dict.containsKey(KEY_COLOR)) {
 			color = Color.valueOf(dict.get(KEY_COLOR).toString().toUpperCase());
 		}
-		
-		mView.drawPolyline(geom, color);
+		if (dict.containsKey(KEY_STROKEWIDTH)) {
+			strokeWidth = TiConvert.toFloat(dict.get(KEY_STROKEWIDTH));
+		}
+				
+		mView.drawPolyline(geom, color, strokeWidth);
 	}
 	
 	@Kroll.method
 	public void drawPolygon(KrollDict dict) {
+		if (!dict.containsKey(KEY_COORDINATES)) {
+			Log.e(TAG, "Required parameter 'coordinates' is missing! Aborting...");
+			return;
+		}
 		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
 		List<LatLong> geom = coordinatesToList(coordinates);
-		Color fillColor = Color.BLUE;
+		Color fillColor = Color.TRANSPARENT;
 		Color strokeColor = Color.BLACK;
 		float strokeWidth = 2;
 		if (dict.containsKey(KEY_FILLCOLOR)) {
