@@ -11,10 +11,12 @@ import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.view.TiUIView;
+import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.graphics.Color;
 import org.mapsforge.core.model.LatLong;
 
 import android.app.Activity;
+import android.graphics.BitmapFactory;
 
 @Kroll.proxy(creatableInModule = MapsforgeModule.class)
 public class MapsforgeViewProxy extends TiViewProxy {
@@ -30,7 +32,10 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	private static final String KEY_FILLCOLOR = "fillcolor";
 	private static final String KEY_STROKECOLOR = "strokecolor";
 	private static final String KEY_STROKEWIDTH = "strokewidth";
-
+	private static final String KEY_HOFFSET = "hoffset";
+	private static final String KEY_VOFFSET = "voffset";
+	private static final String KEY_ICONPATH = "iconPath";
+	
 	private static final String TAG = "MapsforgeProxy";
 	private MapsforgeView mView;
 
@@ -165,6 +170,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		if (dict.containsKey(KEY_COLOR)) {
 			color = Color.valueOf(dict.get(KEY_COLOR).toString().toUpperCase());
 		}
+		
 		mView.drawPolyline(geom, color);
 	}
 	
@@ -184,7 +190,42 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		if (dict.containsKey(KEY_STROKEWIDTH)) {
 			strokeWidth = TiConvert.toFloat(dict.get(KEY_STROKEWIDTH));
 		}
+		
 		mView.drawPolygon(geom, fillColor, strokeColor, strokeWidth);
+	}
+	
+	@Kroll.method
+	public void drawMarker(KrollDict dict) {
+		String iconPath = null;
+		int hoffset = 0;
+		int voffset = 0;
+		
+		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
+		double lat = TiConvert.toDouble(coordinates[0]);
+		double lon = TiConvert.toDouble(coordinates[1]);
+		LatLong pos = new LatLong(lat, lon);
+				
+		if (dict.containsKey(KEY_ICONPATH)) {
+			iconPath = dict.get(KEY_ICONPATH).toString();
+			iconPath = iconPath.replaceAll("file://", "");
+		} else {
+			Log.e(TAG, "Required parameter iconPath could not be found! Aborting...");
+			return;
+		}
+		
+		if (iconPath.isEmpty()) {
+			Log.e(TAG, "Required parameter iconPath has no value! Aborting...");
+			return;
+		}
+				
+		if (dict.containsKey(KEY_HOFFSET)) {
+			hoffset = TiConvert.toInt(dict.get(KEY_HOFFSET));
+		}
+		if (dict.containsKey(KEY_VOFFSET)) {
+			voffset = TiConvert.toInt(dict.get(KEY_VOFFSET));
+		}
+
+		mView.drawMarker(pos, iconPath, hoffset, voffset);
 	}
 	
 	/**
@@ -203,6 +244,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 			double lon = TiConvert.toDouble(pair[1]);
 			geom.add(new LatLong(lat, lon));
 		}
+		
 		return geom;
 	}
 

@@ -1,6 +1,13 @@
 package org.mapsforge;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,20 +19,25 @@ import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.view.TiUIView;
+import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.graphics.Color;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Style;
 import org.mapsforge.core.model.LatLong;
+import org.mapsforge.core.util.IOUtils;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.cache.FileSystemTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
+import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.overlay.Polygon;
 import org.mapsforge.map.layer.overlay.Polyline;
 
 import android.app.Activity;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 
 public class MapsforgeView extends TiUIView {
 	
@@ -34,14 +46,17 @@ public class MapsforgeView extends TiUIView {
 	private static final String KEY_CENTER = "center";
 	private static final String KEY_ZOOMLEVEL = "zoomlevel";
 
+    private static final int TIMEOUT_CONNECT = 5000;
+    private static final int TIMEOUT_READ = 10000;
+
 	private MapView mMap; //TODO Destroy this reference when View is destroyed!
-	private GraphicFactory graphicFactory;
+	private GraphicFactory mGraphicFactory;
 	private HashMap<String, TileDownloadLayer> mLayers = new HashMap<String, TileDownloadLayer>();
 
 	public MapsforgeView(TiViewProxy proxy) {
 		super(proxy);		
 		this.mMap = new MapView(proxy.getActivity());
-		this.graphicFactory = AndroidGraphicFactory.INSTANCE;
+		this.mGraphicFactory = AndroidGraphicFactory.INSTANCE;
 		setNativeView(mMap);
 		Log.d(TAG, "MapView created");
 	}
@@ -83,7 +98,7 @@ public class MapsforgeView extends TiUIView {
 	
 	public void addLayer(Activity activity, String name, String url, String[] subdomains, int parallelrequests, byte maxzoom, byte minzoom){
 		GenericTileSource tileSource = new GenericTileSource(url, subdomains, parallelrequests, maxzoom, minzoom);
-		TileDownloadLayer downloadLayer = new TileDownloadLayer(createTileCache(activity, name), mMap.getModel().mapViewPosition, tileSource, graphicFactory);
+		TileDownloadLayer downloadLayer = new TileDownloadLayer(createTileCache(activity, name), mMap.getModel().mapViewPosition, tileSource, mGraphicFactory);
 		mMap.getLayerManager().getLayers().add(downloadLayer);
 		mLayers.put(name, downloadLayer);
 		Log.d(TAG, "Added layer " + name + " with url " + url);
@@ -95,7 +110,7 @@ public class MapsforgeView extends TiUIView {
         if (!cacheDirectory.exists()) {
                 cacheDirectory.mkdir();
         }
-        return new FileSystemTileCache(1024, cacheDirectory, graphicFactory);
+        return new FileSystemTileCache(1024, cacheDirectory, mGraphicFactory);
     }
     
     public void startLayers() {
@@ -131,28 +146,93 @@ public class MapsforgeView extends TiUIView {
     }
     
     public void drawPolyline(List<LatLong> coordinates, Color color) {
-		Paint paintStroke = graphicFactory.createPaint();
+		Paint paintStroke = mGraphicFactory.createPaint();
 		paintStroke.setStyle(Style.STROKE);
 		paintStroke.setColor(color);
 		paintStroke.setStrokeWidth(5);
 
-		Polyline pl = new Polyline(paintStroke,graphicFactory);
+		Polyline pl = new Polyline(paintStroke,mGraphicFactory);
 		pl.getLatLongs().addAll(coordinates);
 		mMap.getLayerManager().getLayers().add(pl);
     }
     
     public void drawPolygon(List<LatLong> coordinates, Color fillColor, Color strokeColor, float strokeWidth) {
-    	Paint paintFill = graphicFactory.createPaint();
+    	Paint paintFill = mGraphicFactory.createPaint();
     	paintFill.setStyle(Style.FILL);
     	paintFill.setColor(fillColor);
     	
-    	Paint paintStroke = graphicFactory.createPaint();
+    	Paint paintStroke = mGraphicFactory.createPaint();
     	paintStroke.setStyle(Style.STROKE);
     	paintStroke.setColor(strokeColor);
     	paintStroke.setStrokeWidth(strokeWidth);
     	
-    	Polygon pg = new Polygon(paintFill, paintStroke, graphicFactory);
+    	Polygon pg = new Polygon(paintFill, paintStroke, mGraphicFactory);
     	pg.getLatLongs().addAll(coordinates);
     	mMap.getLayerManager().getLayers().add(pg);
+    }
+    
+    public void drawMarker(LatLong pos, String iconPath, int horizontalOffset, int verticalOffset) {
+    	InputStream is = createInputStream(iconPath);
+    	if (is == null) {
+    		Log.e(TAG, "Unable to retrieve marker image. No marker drawn.");
+    		return;
+    	}
+    	
+    	Bitmap icon = null;
+		try {
+			icon = mGraphicFactory.createBitmap(is);
+		} catch (IOException e) {
+			Log.e(TAG, "Unable to create bitmap. No marker drawn.");
+			Log.e(TAG, e.getMessage());
+			return;
+		} finally {
+			IOUtils.closeQuietly(is);
+		}
+		
+		Marker m = new Marker(pos, icon, horizontalOffset, verticalOffset);
+		mMap.getLayerManager().getLayers().add(m);
+    }
+    
+    private static URLConnection getURLConnection(URL url) throws IOException {
+        URLConnection urlConnection = url.openConnection();
+        urlConnection.setConnectTimeout(TIMEOUT_CONNECT);
+        urlConnection.setReadTimeout(TIMEOUT_READ);
+        return urlConnection;
+    }
+    
+    private InputStream createInputStream(String iconPath) {
+    	InputStream is = null;
+     	if (iconPath.startsWith("www")) {
+    		//Add "http://"
+    		iconPath = "http://" + iconPath;
+    	}
+    	
+    	if (iconPath.startsWith("http")) {
+    		URL url = null;
+			try {
+				url = new URL(iconPath);
+    			URLConnection conn = getURLConnection(url);
+    			is = conn.getInputStream();
+			} catch (MalformedURLException e1) {
+				Log.e(TAG, "The URL is malformed.");
+				Log.e(TAG, e1.getMessage());
+				is = null;
+			} catch (IOException e) {
+    			Log.e(TAG, "Could not load file from " + url.toString());
+    			Log.e(TAG, e.getMessage());
+    			is = null;
+    		}
+    	} else {
+    		//Should be path on file system
+    		File f = new File(iconPath);
+    		try {
+    			is = new FileInputStream(f);
+    		} catch (FileNotFoundException e) {
+    			Log.e(TAG, "File not found.");
+    			Log.e(TAG, e.getMessage());
+    			is = null;
+    		}
+    	}
+    	return is;
     }
 }

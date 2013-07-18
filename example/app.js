@@ -36,3 +36,13 @@ mapView.drawPolygon({
 	"fillcolor": "green",
 	"strokecolor": "black",
 	"strokewidth": 5});
+//Draw a marker
+var markerPath = Ti.Filesystem.applicationDataDirectory + Ti.Filesystem.separator + 'marker.png';
+var f = Ti.Filesystem.getFile(markerPath);
+mapView.drawMarker({
+	//"iconPath": "",
+	//"iconPath": "https://dl.dropboxusercontent.com/u/9220166/marker.png",
+	"iconPath": "http://www.google.com/mapfiles/marker.png",
+	//"iconPath": "/sdcard/marker.png",
+	"coordinates": [47.3100, 12.7300]
+	});
