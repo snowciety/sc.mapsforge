@@ -21,9 +21,9 @@ mapView.addLayer({
 	"name": "osm", 
 	"url": "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
 	"subdomains": ["a", "b"],
-	"parallelrequests": 2,
-	"maxzoom": "18",
-	"minzoom": "12"
+	"parallelRequests": 2,
+	"maxZoom": "18",
+	"minZoom": "12"
 	});
 mapView.startLayer("osm"); //All layers can be started with .startLayers()
 //Draw a blue triangle on the map
@@ -44,9 +44,9 @@ mapView.drawPolygon({
 		[47.3235, 12.7345], 
 		[47.3045, 12.7345]
 	], 
-	"fillcolor": "green",
-	"strokecolor": "black",
-	"strokewidth": 5});
+	"fillColor": "green",
+	"strokeColor": "black",
+	"strokeWidth": 5});
 //Draw a marker
 mapView.drawMarker({
 	"iconPath": "http://www.google.com/mapfiles/marker.png",
@@ -56,6 +56,6 @@ mapView.drawMarker({
 mapView.drawMarker({
 	"iconPath": "http://www.google.com/mapfiles/dd-start.png",
 	"coordinates": [47.3100, 12.7300],
-	"hoffset": 5,
-	"voffset": 4
+	"hOffset": 5,
+	"vOffset": 4
 	});

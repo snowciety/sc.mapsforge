@@ -24,16 +24,16 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	private static final String KEY_URL = "url";
 	private static final String KEY_NAME = "name";
 	private static final String KEY_SUBDOMAINS = "subdomains";
-	private static final String KEY_REQUESTS = "parallelrequests";
-	private static final String KEY_MAXZOOM = "maxzoom";
-	private static final String KEY_MINZOOM = "minzoom";
+	private static final String KEY_REQUESTS = "parallelRequests";
+	private static final String KEY_MAXZOOM = "maxZoom";
+	private static final String KEY_MINZOOM = "minZoom";
 	private static final String KEY_COLOR = "color";
 	private static final String KEY_COORDINATES = "coordinates";
-	private static final String KEY_FILLCOLOR = "fillcolor";
-	private static final String KEY_STROKECOLOR = "strokecolor";
-	private static final String KEY_STROKEWIDTH = "strokewidth";
-	private static final String KEY_HOFFSET = "hoffset";
-	private static final String KEY_VOFFSET = "voffset";
+	private static final String KEY_FILLCOLOR = "fillColor";
+	private static final String KEY_STROKECOLOR = "strokeColor";
+	private static final String KEY_STROKEWIDTH = "strokeWidth";
+	private static final String KEY_HOFFSET = "hOffset";
+	private static final String KEY_VOFFSET = "vOffset";
 	private static final String KEY_ICONPATH = "iconPath";
 	
 	private static final String TAG = "MapsforgeProxy";
