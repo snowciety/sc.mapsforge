@@ -28,21 +28,34 @@ mapView.addLayer({
 mapView.startLayer("osm"); //All layers can be started with .startLayers()
 //Draw a blue triangle on the map
 mapView.drawPolyline({
-	"coordinates": [[47.33,12.76],[47.33,12.78], [47.35, 12.77],[47.33,12.76]], 
+	"coordinates": [
+		[47.33,12.76], 
+		[47.33,12.78], 
+		[47.35, 12.77], 
+		[47.33,12.76]
+	], 
 	"color": "blue"});
 //Draw a green polygon with a thick black stroke
 mapView.drawPolygon({
-	"coordinates": [[47.3045, 12.7345], [47.3045, 12.7545], [47.3235, 12.7545], [47.3235, 12.7345], [47.3045, 12.7345]], 
+	"coordinates": [
+		[47.3045, 12.7345], 
+		[47.3045, 12.7545], 
+		[47.3235, 12.7545], 
+		[47.3235, 12.7345], 
+		[47.3045, 12.7345]
+	], 
 	"fillcolor": "green",
 	"strokecolor": "black",
 	"strokewidth": 5});
 //Draw a marker
-var markerPath = Ti.Filesystem.applicationDataDirectory + Ti.Filesystem.separator + 'marker.png';
-var f = Ti.Filesystem.getFile(markerPath);
 mapView.drawMarker({
-	//"iconPath": "",
-	//"iconPath": "https://dl.dropboxusercontent.com/u/9220166/marker.png",
 	"iconPath": "http://www.google.com/mapfiles/marker.png",
-	//"iconPath": "/sdcard/marker.png",
 	"coordinates": [47.3100, 12.7300]
+	});
+//Draw a marker at the same position as above but with offset
+mapView.drawMarker({
+	"iconPath": "http://www.google.com/mapfiles/dd-start.png",
+	"coordinates": [47.3100, 12.7300],
+	"hoffset": 5,
+	"voffset": 4
 	});
