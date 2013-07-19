@@ -6,7 +6,8 @@ var mf = require('org.mapsforge');
 var mapView = mf.createMapsforgeView({ 
 	"scalebar": true, 
 	"center": [47.32, 12.79], 
-	"zoomlevel": "12" }); //Create map view
+	"zoomlevel": "12",
+	"debug": true }); //Create map view
 win.add(mapView);
 win.open();
 /* 	
