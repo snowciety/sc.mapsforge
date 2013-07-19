@@ -31,13 +31,12 @@ import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.cache.FileSystemTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
+import org.mapsforge.map.layer.overlay.Circle;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.overlay.Polygon;
 import org.mapsforge.map.layer.overlay.Polyline;
 
 import android.app.Activity;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 
 public class MapsforgeView extends TiUIView {
 	
@@ -193,6 +192,20 @@ public class MapsforgeView extends TiUIView {
 		mMap.getLayerManager().getLayers().add(m);
     }
     
+    public void drawCircle(LatLong latLong, float radius, Color fillColor, Color strokeColor, float strokeWidth) {
+    	Paint paintFill = mGraphicFactory.createPaint();
+    	paintFill.setColor(fillColor);
+    	paintFill.setStyle(Style.FILL);
+    	
+    	Paint paintStroke = mGraphicFactory.createPaint();
+    	paintStroke.setColor(strokeColor);
+    	paintStroke.setStrokeWidth(strokeWidth);
+    	paintStroke.setStyle(Style.STROKE);
+    	
+    	Circle c = new Circle(latLong, radius, paintFill, paintStroke);
+    	mMap.getLayerManager().getLayers().add(c);
+    }
+    
     private static URLConnection getURLConnection(URL url) throws IOException {
         URLConnection urlConnection = url.openConnection();
         urlConnection.setConnectTimeout(TIMEOUT_CONNECT);
@@ -200,7 +213,7 @@ public class MapsforgeView extends TiUIView {
         return urlConnection;
     }
     
-    private InputStream createInputStream(String iconPath) {
+    private static InputStream createInputStream(String iconPath) {
     	InputStream is = null;
      	if (iconPath.startsWith("www")) {
     		//Add "http://"

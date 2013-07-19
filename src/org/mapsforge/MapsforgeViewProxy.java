@@ -11,12 +11,10 @@ import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.view.TiUIView;
-import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.graphics.Color;
 import org.mapsforge.core.model.LatLong;
 
 import android.app.Activity;
-import android.graphics.BitmapFactory;
 
 @Kroll.proxy(creatableInModule = MapsforgeModule.class)
 public class MapsforgeViewProxy extends TiViewProxy {
@@ -35,6 +33,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	private static final String KEY_HOFFSET = "hOffset";
 	private static final String KEY_VOFFSET = "vOffset";
 	private static final String KEY_ICONPATH = "iconPath";
+	private static final String KEY_RADIUS = "radius";
 	
 	private static final String TAG = "MapsforgeProxy";
 	private MapsforgeView mView;
@@ -68,7 +67,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 */
 	
 	@Kroll.method
-	public void addLayer(HashMap args) {
+	public void addLayer(HashMap<String,Object> args) {
 		KrollDict dict = new KrollDict(args);
 		/*
 		 * Arguments:
@@ -209,6 +208,10 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	
 	@Kroll.method
 	public void drawMarker(KrollDict dict) {
+		if (!dict.containsKey(KEY_COORDINATES)) {
+			Log.e(TAG, "Required parameter 'coordinates' is missing! Aborting...");
+			return;
+		}
 		String iconPath = null;
 		int hoffset = 0;
 		int voffset = 0;
@@ -240,6 +243,42 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		}
 
 		mView.drawMarker(pos, iconPath, hoffset, voffset);
+	}
+	
+	@Kroll.method
+	public void drawCircle(KrollDict dict) {
+		if (!dict.containsKey(KEY_COORDINATES)) {
+			Log.e(TAG, "Required parameter 'coordinates' is missing! Aborting...");
+			return;
+		}
+		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
+		double lat = TiConvert.toDouble(coordinates[0]);
+		double lon = TiConvert.toDouble(coordinates[1]);
+		LatLong latLong = new LatLong(lat, lon);
+		
+		Color fillColor = Color.RED;
+		Color strokeColor = Color.BLACK;
+		float strokeWidth = 0;
+		float radius = 0;
+		if (dict.containsKey(KEY_FILLCOLOR)) {
+			fillColor = Color.valueOf(dict.get(KEY_FILLCOLOR).toString().toUpperCase());
+		}
+		if (dict.containsKey(KEY_STROKECOLOR)) {
+			strokeColor = Color.valueOf(dict.get(KEY_STROKECOLOR).toString().toUpperCase());
+		}
+		if (dict.containsKey(KEY_STROKEWIDTH)) {
+			strokeWidth = TiConvert.toFloat(dict.get(KEY_STROKEWIDTH));
+		}
+		if (dict.containsKey(KEY_RADIUS)) {
+			radius = TiConvert.toFloat(dict.get(KEY_RADIUS));
+		}
+		
+		if (radius < 0) {
+			Log.e(TAG, "Parameter radius can not be <0! Aborting...");
+			return;
+		}
+		
+		mView.drawCircle(latLong, radius, fillColor, strokeColor, strokeWidth);
 	}
 	
 	/**
