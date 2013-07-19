@@ -59,3 +59,10 @@ mapView.drawMarker({
 	"hOffset": 5,
 	"vOffset": 4
 	});
+//Draw a circle
+mapView.drawCircle({
+	"coordinates": [47.3320, 12.7230],
+	"fillColor": "blue",
+	"strokeColor": "red",
+	"radius": 500
+	});
