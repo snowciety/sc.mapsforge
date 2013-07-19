@@ -28,6 +28,7 @@ import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.util.IOUtils;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.view.MapView;
+import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.cache.FileSystemTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
@@ -103,7 +104,18 @@ public class MapsforgeView extends TiUIView {
 		super.propertyChanged(key, oldValue, newValue, proxy);
 	}
 	
-	public void addLayer(Activity activity, String name, String url, String[] subdomains, int parallelrequests, byte maxzoom, byte minzoom){
+	/**
+	 * Adds a tile layer to the map view
+	 * @param activity	Context of the map view.
+	 * @param name	Identifier for the layer.
+	 * @param url	URL to the tile source. Must have {z},{x} and {y} place holders.
+	 * @param subdomains	Sub domains, if any, for the tile source.
+	 * @param parallelrequests	Number of parallel requests the tile source can handle.
+	 * @param maxzoom	Highest zoom level for the tile source.
+	 * @param minzoom	Lowest zoom level for the tile source.
+	 */
+	public void addLayer(Activity activity, String name, String url, String[] subdomains,
+			int parallelrequests, byte maxzoom, byte minzoom){
 		GenericTileSource tileSource = new GenericTileSource(url, subdomains, parallelrequests, maxzoom, minzoom);
 		TileDownloadLayer downloadLayer = new TileDownloadLayer(createTileCache(activity, name), mMap.getModel().mapViewPosition, tileSource, mGraphicFactory);
 		mMap.getLayerManager().getLayers().add(downloadLayer);
@@ -111,15 +123,24 @@ public class MapsforgeView extends TiUIView {
 		debugMsg("Added layer " + name + " with url " + url);
 	}
 	
-    private TileCache createTileCache(Activity activity, String name) {
-        String cacheDirectoryName = activity.getExternalCacheDir().getAbsolutePath() + File.separator + name;
-        File cacheDirectory = new File(cacheDirectoryName);
-        if (!cacheDirectory.exists()) {
-                cacheDirectory.mkdir();
-        }
-        return new FileSystemTileCache(1024, cacheDirectory, mGraphicFactory);
-    }
+	
+	/**
+	 * Removes a specific layer from the map view.
+	 * @param name	Layer identifier as specified in addLayer().
+	 */
+	public void removeLayer(String name) {
+		Layer l = mLayers.get(name);
+		if (l != null) {
+			mMap.getLayerManager().getLayers().remove(l);
+			mLayers.remove(name);
+		} else {
+			Log.e(TAG, "Layer with name " + name + " could not be found!");
+		}
+	}
     
+    /**
+     * Starts all tile layers.
+     */
     public void startLayers() {
     	Iterator<Entry<String, TileDownloadLayer>> it = mLayers.entrySet().iterator();
     	while (it.hasNext()) {
@@ -129,6 +150,10 @@ public class MapsforgeView extends TiUIView {
     	}
     }
     
+    /**
+     * Starts a specific tile layer using its identifier.
+     * @param name
+     */
     public void startLayer(String name) {
     	Iterator<Entry<String, TileDownloadLayer>> it = mLayers.entrySet().iterator();
     	while (it.hasNext()) {
@@ -142,16 +167,31 @@ public class MapsforgeView extends TiUIView {
     	Log.e(TAG, "Could not find any layer named " + name + " to start!");
     }
     
+    /**
+     * Sets the center of the map view.
+     * @param lat
+     * @param lon
+     */
     public void setCenter(double lat, double lon) {
     	mMap.getModel().mapViewPosition.setCenter(new LatLong(lat, lon));
 		debugMsg("center set to " + Double.toString(lat) + " " + Double.toString(lon));
     }
     
+    /**
+     * Sets the zoom level of the map view.
+     * @param zoomlevel
+     */
     public void setZoomLevel(byte zoomlevel) {
     	mMap.getModel().mapViewPosition.setZoomLevel(zoomlevel);
 		debugMsg("zoomlevel set to " + Byte.toString(zoomlevel));
     }
     
+    /**
+     * Draws a polyline on the map view.
+     * @param coordinates
+     * @param color
+     * @param strokeWidth
+     */
     public void drawPolyline(List<LatLong> coordinates, Color color, float strokeWidth) {
 		Paint paintStroke = mGraphicFactory.createPaint();
 		paintStroke.setStyle(Style.STROKE);
@@ -163,6 +203,13 @@ public class MapsforgeView extends TiUIView {
 		mMap.getLayerManager().getLayers().add(pl);
     }
     
+    /**
+     * Draws a polygon on the map view.
+     * @param coordinates
+     * @param fillColor
+     * @param strokeColor
+     * @param strokeWidth
+     */
     public void drawPolygon(List<LatLong> coordinates, Color fillColor, Color strokeColor, float strokeWidth) {
     	Paint paintFill = mGraphicFactory.createPaint();
     	paintFill.setStyle(Style.FILL);
@@ -178,6 +225,13 @@ public class MapsforgeView extends TiUIView {
     	mMap.getLayerManager().getLayers().add(pg);
     }
     
+    /**
+     * Puts a marker on the map view.
+     * @param pos
+     * @param iconPath	Must be a URL or file system path on the device(i.e '/sdcard/marker.png').
+     * @param horizontalOffset
+     * @param verticalOffset
+     */
     public void drawMarker(LatLong pos, String iconPath, int horizontalOffset, int verticalOffset) {
     	InputStream is = createInputStream(iconPath);
     	if (is == null) {
@@ -200,6 +254,14 @@ public class MapsforgeView extends TiUIView {
 		mMap.getLayerManager().getLayers().add(m);
     }
     
+    /**
+     * Draws a circle on the map view.
+     * @param latLong
+     * @param radius	Note: The radius is in meters!
+     * @param fillColor
+     * @param strokeColor
+     * @param strokeWidth
+     */
     public void drawCircle(LatLong latLong, float radius, Color fillColor, Color strokeColor, float strokeWidth) {
     	Paint paintFill = mGraphicFactory.createPaint();
     	paintFill.setColor(fillColor);
@@ -212,6 +274,15 @@ public class MapsforgeView extends TiUIView {
     	
     	Circle c = new Circle(latLong, radius, paintFill, paintStroke);
     	mMap.getLayerManager().getLayers().add(c);
+    }
+    
+    private TileCache createTileCache(Activity activity, String name) {
+        String cacheDirectoryName = activity.getExternalCacheDir().getAbsolutePath() + File.separator + name;
+        File cacheDirectory = new File(cacheDirectoryName);
+        if (!cacheDirectory.exists()) {
+                cacheDirectory.mkdir();
+        }
+        return new FileSystemTileCache(1024, cacheDirectory, mGraphicFactory);
     }
     
     private static URLConnection getURLConnection(URL url) throws IOException {
@@ -244,7 +315,7 @@ public class MapsforgeView extends TiUIView {
     			is = null;
     		}
     	} else {
-    		//Should be path on file system
+    		//Should be a file system path
     		File f = new File(iconPath);
     		try {
     			is = new FileInputStream(f);

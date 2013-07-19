@@ -66,28 +66,43 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		if (options.containsKey(KEY_DEBUG)) {
 			sDebug = options.getBoolean(KEY_DEBUG);
 		}
-		debugMsg("options: " + options.toString());
-	}
-	
-	@Override
-	public void handleCreationArgs(KrollModule createdInModule, Object[] args) {
-		super.handleCreationArgs(createdInModule, args);
+		debugMsg("handleCreationDict " + options.toString());
 	}
 	
 	/**
-	 * Exposed Kroll methods
+	 * Kroll methods
 	 */
 	
+	/**
+	 * Sets the current center of the map view.
+	 * @param lat	latitude in degrees.
+	 * @param lon	longitude in degrees.
+	 */
 	@Kroll.method
 	public void setCenter(double lat, double lon) {
 		mView.setCenter(lat,lon);
 	}
 	
+	/**
+	 * Sets the current zoom level for the map view.
+	 * @param zoomlevel	zoom level.
+	 */
 	@Kroll.method
 	public void setZoomLevel(String zoomlevel) {
 		mView.setZoomLevel(Byte.valueOf(zoomlevel));
 	}
 	
+	/**
+	 * Adds a bitmap tile layer to the map view.
+	 * Supported parameters:
+	 * name String
+	 * url String Must contain {z},{x} and {y} place holders.
+	 * subdomains StringArray
+	 * parallelRequests Integer
+	 * maxZoom	Integer
+	 * minZoom Integer
+	 * @param args	dictionary with key-value pairs: {key:value}.
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Kroll.method
 	public void addLayer(HashMap args) {
@@ -102,7 +117,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		if (dict.containsKey(KEY_NAME)) {
 			name = dict.get(KEY_NAME).toString();
 		} else {
-			throw new IllegalArgumentException("Argument '" + KEY_NAME + "' must be supplied!");
+			throw new IllegalArgumentException("Parameter '" + KEY_NAME + "' must be supplied!");
 		}
 
 		if (dict.containsKey(KEY_URL)) {
@@ -111,19 +126,19 @@ public class MapsforgeViewProxy extends TiViewProxy {
 				throw new IllegalArgumentException("URL must contain {z} {x} {y} identifiers!");
 			}
 		} else {
-			throw new IllegalArgumentException("Argument '" + KEY_URL + "' must be supplied!");
+			throw new IllegalArgumentException("Parameter '" + KEY_URL + "' must be supplied!");
 		}
 		
 		if (dict.containsKey(KEY_SUBDOMAINS)) {
 			subdomains = dict.getStringArray(KEY_SUBDOMAINS);
 		} else {
-			throw new IllegalArgumentException("Argument '" + KEY_SUBDOMAINS + "' must be supplied!");
+			throw new IllegalArgumentException("Parameter '" + KEY_SUBDOMAINS + "' must be supplied!");
 		}
 		
 		if (dict.containsKey(KEY_REQUESTS)) {
 			parallelrequests = dict.getInt(KEY_REQUESTS);
 		} else {
-			throw new IllegalArgumentException("Argument '" + KEY_REQUESTS + "' must be supplied!");
+			throw new IllegalArgumentException("Parameter '" + KEY_REQUESTS + "' must be supplied!");
 		}
 		
 		if (dict.containsKey(KEY_MAXZOOM)) {
@@ -134,7 +149,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 				return;
 			}
 		} else {
-			throw new IllegalArgumentException("Argument '" + KEY_MAXZOOM + "' must be supplied!");
+			throw new IllegalArgumentException("Parameter '" + KEY_MAXZOOM + "' must be supplied!");
 		}
 		
 		if (dict.containsKey(KEY_MINZOOM)) {
@@ -145,22 +160,37 @@ public class MapsforgeViewProxy extends TiViewProxy {
 				return;
 			}
 		} else {
-			throw new IllegalArgumentException("Argument '" + KEY_MINZOOM + "' must be supplied!");
+			throw new IllegalArgumentException("Parameter '" + KEY_MINZOOM + "' must be supplied!");
 		}
 		
 		mView.addLayer(getActivity(), name, url, subdomains, parallelrequests, maxzoom, minzoom);
 	}
 	
+	/**
+	 * Activates all tile layers.
+	 */
 	@Kroll.method
 	public void startLayers() {
 		mView.startLayers();
 	}
 	
+	/**
+	 * Activate a specific tile layer by its identifier 'name'.
+	 * @param name
+	 */
 	@Kroll.method
 	public void startLayer(String name) {
 		mView.startLayer(name);
 	}
 	
+	/**
+	 * Draws a polyline on the map view.
+	 * Supported parameters:
+	 * coordinates Array<Array<Integer> Like [ [45,12], [45,13] ]
+	 * color String Supported colors are: black, blue, green, red, transparent, white.
+	 * strokeWidth Integer
+	 * @param dict	dictionary with key-value pairs: {key:value}.
+	 */
 	@Kroll.method
 	public void drawPolyline(KrollDict dict) {
 		checkForCoordinates(dict);
@@ -180,6 +210,15 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		mView.drawPolyline(geom, color, strokeWidth);
 	}
 	
+	/**
+	 * Draws a polygon on the map view.
+	 * Supported parameters:
+	 * coordinates Array<Array<Integer>> Like [ [45,12], [45,13] ]
+	 * fillColor String Supported colors are: black, blue, green, red, transparent, white.
+	 * strokeColor String Supported colors are: black, blue, green, red, transparent, white.
+	 * strokeWidth Integer
+	 * @param dict	dictionary with key-value pairs: {key:value}.
+	 */
 	@Kroll.method
 	public void drawPolygon(KrollDict dict) {
 		checkForCoordinates(dict);
@@ -202,6 +241,15 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		mView.drawPolygon(geom, fillColor, strokeColor, strokeWidth);
 	}
 	
+	/**
+	 * Puts a marker on the map at a given position.
+	 * Supported parameters:
+	 * coordinates Array<Integer> Like [45,13]
+	 * iconPath String Either a URL or a file system path on the device (i.e '/sdcard/myfile.png')
+	 * hOffset Integer Horizontal offset from position in pixels.
+	 * vOffset Integer Vertical offset from position in pixels.
+	 * @param dict	dictionary with key-value pairs: {key:value}.
+	 */
 	@Kroll.method
 	public void drawMarker(KrollDict dict) {
 		checkForCoordinates(dict);
@@ -237,6 +285,16 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		mView.drawMarker(pos, iconPath, hoffset, voffset);
 	}
 	
+	/**
+	 * Draws a circle on the map view.
+	 * Supported parameters:
+	 * coordinates Array<Integer> Like [45,12]
+	 * fillColor String Supported colors are: black, blue, green, red, transparent, white.
+	 * strokeColor String Supported colors are: black, blue, green, red, transparent, white.
+	 * strokeWidth Integer
+	 * radius Integer Radius of the circle in meters.
+	 * @param dict	dictionary with key-value pairs: {key:value}.
+	 */
 	@Kroll.method
 	public void drawCircle(KrollDict dict) {
 		checkForCoordinates(dict);
@@ -279,6 +337,9 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	}
 	
 	private List<LatLong> coordinatesToList(Object[] coordinates) {
+		if (coordinates.length < 2) {
+			throw new IllegalArgumentException("A coordinate pair was not given!");
+		}
 		List<LatLong> geom = new ArrayList<LatLong>();
 		for(int i = 0; i < coordinates.length; i++) {
 			Object[] pair = (Object[]) coordinates[i];

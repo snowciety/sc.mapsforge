@@ -34,5 +34,10 @@ public class MapsforgeModule extends KrollModule
 	public void onResume(Activity activity) {
 		super.onResume(activity);
 	}
+	
+	@Override
+	public void onDestroy(Activity activity) {
+		super.onDestroy(activity);
+	}
 }
 
