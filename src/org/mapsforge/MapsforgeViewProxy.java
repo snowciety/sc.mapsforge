@@ -67,6 +67,16 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 */
 	
 	@Kroll.method
+	public void setCenter(double lat, double lon) {
+		mView.setCenter(lat,lon);
+	}
+	
+	@Kroll.method
+	public void setZoomLevel(String zoomlevel) {
+		mView.setZoomLevel(Byte.valueOf(zoomlevel));
+	}
+	
+	@Kroll.method
 	public void addLayer(HashMap<String,Object> args) {
 		KrollDict dict = new KrollDict(args);
 		/*
@@ -152,16 +162,6 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	}
 	
 	@Kroll.method
-	public void setCenter(double lat, double lon) {
-		mView.setCenter(lat,lon);
-	}
-	
-	@Kroll.method
-	public void setZoomLevel(String zoomlevel) {
-		mView.setZoomLevel(Byte.valueOf(zoomlevel));
-	}
-	
-	@Kroll.method
 	public void drawPolyline(KrollDict dict) {
 		if (!dict.containsKey(KEY_COORDINATES)) {
 			Log.e(TAG, "Required parameter 'coordinates' is missing! Aborting...");
@@ -170,7 +170,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
 		List<LatLong> geom = coordinatesToList(coordinates);
 		Color color = Color.RED;
-		float strokeWidth = 5;
+		float strokeWidth = 0;
 		
 		if (dict.containsKey(KEY_COLOR)) {
 			color = Color.valueOf(dict.get(KEY_COLOR).toString().toUpperCase());
@@ -192,7 +192,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		List<LatLong> geom = coordinatesToList(coordinates);
 		Color fillColor = Color.TRANSPARENT;
 		Color strokeColor = Color.BLACK;
-		float strokeWidth = 2;
+		float strokeWidth = 0;
 		if (dict.containsKey(KEY_FILLCOLOR)) {
 			fillColor = Color.valueOf(dict.get(KEY_FILLCOLOR).toString().toUpperCase());
 		}
