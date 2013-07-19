@@ -41,34 +41,47 @@ import android.app.Activity;
 public class MapsforgeView extends TiUIView {
 	
 	private static final String TAG = "MapsforgeView";
+	private static final String KEY_DEBUG = "debug";
 	private static final String KEY_SCALEBAR = "scalebar";
 	private static final String KEY_CENTER = "center";
 	private static final String KEY_ZOOMLEVEL = "zoomlevel";
 
     private static final int TIMEOUT_CONNECT = 5000;
     private static final int TIMEOUT_READ = 10000;
+    
+	private static boolean sDebug = false;
 
-	private MapView mMap; //TODO Destroy this reference when View is destroyed!
+	private MapView mMap;
 	private GraphicFactory mGraphicFactory;
 	private HashMap<String, TileDownloadLayer> mLayers = new HashMap<String, TileDownloadLayer>();
+	
+	private static void debugMsg(String msg) {
+		if (sDebug) {
+			Log.d(TAG, msg);
+		}
+	}
 
 	public MapsforgeView(TiViewProxy proxy) {
 		super(proxy);		
 		this.mMap = new MapView(proxy.getActivity());
 		this.mGraphicFactory = AndroidGraphicFactory.INSTANCE;
 		setNativeView(mMap);
-		Log.d(TAG, "MapView created");
+		debugMsg("MapView created");
 	}
 	
 	@Override
 	public void processProperties(KrollDict props) {
 		super.processProperties(props);
-		
-		Log.d(TAG, "processProperties " + props);
 				
+		if (props.containsKey(KEY_DEBUG)) {
+			sDebug = props.getBoolean(KEY_DEBUG);
+		}
+		
+		debugMsg("processProperties " + props);
+		
 		if (props.containsKey(KEY_SCALEBAR)) {
 			mMap.getMapScaleBar().setVisible(props.getBoolean(KEY_SCALEBAR));
-			Log.d(TAG, "scalebar set to " + (props.getBoolean(KEY_SCALEBAR) ? "visible" : "hidden"));
+			debugMsg("scalebar set to " + (props.getBoolean(KEY_SCALEBAR) ? "visible" : "hidden"));
 		}
 		
 		if (props.containsKey(KEY_CENTER)) {
@@ -88,11 +101,6 @@ public class MapsforgeView extends TiUIView {
 	public void propertyChanged(String key, Object oldValue, Object newValue,
 			KrollProxy proxy) {
 		super.propertyChanged(key, oldValue, newValue, proxy);
-		
-		if (key.equals(KEY_SCALEBAR)) {
-			mMap.getMapScaleBar().setVisible((Boolean)newValue);
-			Log.d(TAG, "scalebar set to " + ((Boolean)newValue ? "visible" : "hidden"));
-		}
 	}
 	
 	public void addLayer(Activity activity, String name, String url, String[] subdomains, int parallelrequests, byte maxzoom, byte minzoom){
@@ -100,7 +108,7 @@ public class MapsforgeView extends TiUIView {
 		TileDownloadLayer downloadLayer = new TileDownloadLayer(createTileCache(activity, name), mMap.getModel().mapViewPosition, tileSource, mGraphicFactory);
 		mMap.getLayerManager().getLayers().add(downloadLayer);
 		mLayers.put(name, downloadLayer);
-		Log.d(TAG, "Added layer " + name + " with url " + url);
+		debugMsg("Added layer " + name + " with url " + url);
 	}
 	
     private TileCache createTileCache(Activity activity, String name) {
@@ -117,7 +125,7 @@ public class MapsforgeView extends TiUIView {
     	while (it.hasNext()) {
     		Entry<String, TileDownloadLayer> pairs = (Entry<String, TileDownloadLayer>) it.next();
     		pairs.getValue().start();
-			Log.d(TAG, "Started layer " + pairs.getKey());
+			debugMsg("Started layer " + pairs.getKey());
     	}
     }
     
@@ -127,7 +135,7 @@ public class MapsforgeView extends TiUIView {
     		Entry<String, TileDownloadLayer> pairs = (Entry<String, TileDownloadLayer>) it.next();
     		if (pairs.getKey().equals(name)) {
     			pairs.getValue().start();
-    			Log.d(TAG, "Started layer " + pairs.getKey());
+    			debugMsg("Started layer " + pairs.getKey());
     			return;
     		}
     	}
@@ -136,12 +144,12 @@ public class MapsforgeView extends TiUIView {
     
     public void setCenter(double lat, double lon) {
     	mMap.getModel().mapViewPosition.setCenter(new LatLong(lat, lon));
-		Log.d(TAG, "center set to " + Double.toString(lat) + " " + Double.toString(lon));
+		debugMsg("center set to " + Double.toString(lat) + " " + Double.toString(lon));
     }
     
     public void setZoomLevel(byte zoomlevel) {
     	mMap.getModel().mapViewPosition.setZoomLevel(zoomlevel);
-		Log.d(TAG, "zoomlevel set to " + Byte.toString(zoomlevel));
+		debugMsg("zoomlevel set to " + Byte.toString(zoomlevel));
     }
     
     public void drawPolyline(List<LatLong> coordinates, Color color, float strokeWidth) {

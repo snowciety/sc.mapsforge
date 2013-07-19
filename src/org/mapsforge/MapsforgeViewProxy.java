@@ -19,6 +19,7 @@ import android.app.Activity;
 @Kroll.proxy(creatableInModule = MapsforgeModule.class)
 public class MapsforgeViewProxy extends TiViewProxy {
 	
+	private static final String KEY_DEBUG = "debug";
 	private static final String KEY_URL = "url";
 	private static final String KEY_NAME = "name";
 	private static final String KEY_SUBDOMAINS = "subdomains";
@@ -34,9 +35,17 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	private static final String KEY_VOFFSET = "vOffset";
 	private static final String KEY_ICONPATH = "iconPath";
 	private static final String KEY_RADIUS = "radius";
-	
 	private static final String TAG = "MapsforgeProxy";
+	
+	private static boolean sDebug = false;
+	
 	private MapsforgeView mView;
+	
+	private static void debugMsg(String msg) {
+		if (sDebug) {
+			Log.d(TAG, msg);
+		}
+	}
 
 	/**
 	 * Overrides
@@ -44,7 +53,6 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	
 	@Override
 	public TiUIView createView(Activity activity) {
-		Log.d(TAG, "createView called");
 		mView = new MapsforgeView(this);
 		mView.getLayoutParams().autoFillsHeight = true;
 		mView.getLayoutParams().autoFillsWidth = true;
@@ -55,6 +63,10 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	@Override
 	public void handleCreationDict(KrollDict options) {
 		super.handleCreationDict(options);
+		if (options.containsKey(KEY_DEBUG)) {
+			sDebug = options.getBoolean(KEY_DEBUG);
+		}
+		debugMsg("options: " + options.toString());
 	}
 	
 	@Override
@@ -76,54 +88,42 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		mView.setZoomLevel(Byte.valueOf(zoomlevel));
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Kroll.method
-	public void addLayer(HashMap<String,Object> args) {
+	public void addLayer(HashMap args) {
 		KrollDict dict = new KrollDict(args);
-		/*
-		 * Arguments:
-		 * name String (used as cached identifier)
-		 * url String
-		 * subdomains String[]
-		 * parallelrequests int
-		 * maxzoom byte
-		 * minzoom byte
-		 *
-		 */
+		
 		String name = null, url = null;
 		String[] subdomains = null;
 		int parallelrequests = 0;
 		byte maxzoom = 18;
 		byte minzoom = 12;
-		
+
 		if (dict.containsKey(KEY_NAME)) {
-			name = dict.getString(KEY_NAME);
+			name = dict.get(KEY_NAME).toString();
 		} else {
-			Log.e(TAG, "argument '" + KEY_NAME + "' must be supplied!");
-			return;
+			throw new IllegalArgumentException("Argument '" + KEY_NAME + "' must be supplied!");
 		}
-		
+
 		if (dict.containsKey(KEY_URL)) {
 			url = dict.getString(KEY_URL);
 			if (!validUrl(url)) {
-				Log.e(TAG, "url must contain {z} {x} {y} identifiers!");
+				throw new IllegalArgumentException("URL must contain {z} {x} {y} identifiers!");
 			}
 		} else {
-			Log.e(TAG, "argument '" + KEY_URL + "' must be supplied!");
-			return;
+			throw new IllegalArgumentException("Argument '" + KEY_URL + "' must be supplied!");
 		}
 		
 		if (dict.containsKey(KEY_SUBDOMAINS)) {
 			subdomains = dict.getStringArray(KEY_SUBDOMAINS);
 		} else {
-			Log.e(TAG, "argument '" + KEY_SUBDOMAINS + "' must be supplied!");
-			return;
+			throw new IllegalArgumentException("Argument '" + KEY_SUBDOMAINS + "' must be supplied!");
 		}
 		
 		if (dict.containsKey(KEY_REQUESTS)) {
 			parallelrequests = dict.getInt(KEY_REQUESTS);
 		} else {
-			Log.e(TAG, "argument '" + KEY_REQUESTS + "' must be supplied!");
-			return;
+			throw new IllegalArgumentException("Argument '" + KEY_REQUESTS + "' must be supplied!");
 		}
 		
 		if (dict.containsKey(KEY_MAXZOOM)) {
@@ -131,10 +131,10 @@ public class MapsforgeViewProxy extends TiViewProxy {
 				maxzoom = Byte.valueOf(dict.getString(KEY_MAXZOOM));
 			} catch (NumberFormatException e) {
 				Log.e(TAG, "maxzoom was not defined as a number!");
+				return;
 			}
 		} else {
-			Log.e(TAG, "argument '" + KEY_MAXZOOM + "' must be supplied!");
-			return;
+			throw new IllegalArgumentException("Argument '" + KEY_MAXZOOM + "' must be supplied!");
 		}
 		
 		if (dict.containsKey(KEY_MINZOOM)) {
@@ -142,10 +142,10 @@ public class MapsforgeViewProxy extends TiViewProxy {
 				minzoom = Byte.valueOf(dict.getString(KEY_MINZOOM));
 			} catch(NumberFormatException e) {
 				Log.e(TAG, "minzoom was not defined as a number!");
+				return;
 			}
 		} else {
-			Log.e(TAG, "argument '" + KEY_MINZOOM + "' must be supplied!");
-			return;
+			throw new IllegalArgumentException("Argument '" + KEY_MINZOOM + "' must be supplied!");
 		}
 		
 		mView.addLayer(getActivity(), name, url, subdomains, parallelrequests, maxzoom, minzoom);
@@ -163,10 +163,8 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	
 	@Kroll.method
 	public void drawPolyline(KrollDict dict) {
-		if (!dict.containsKey(KEY_COORDINATES)) {
-			Log.e(TAG, "Required parameter 'coordinates' is missing! Aborting...");
-			return;
-		}
+		checkForCoordinates(dict);
+		
 		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
 		List<LatLong> geom = coordinatesToList(coordinates);
 		Color color = Color.RED;
@@ -184,10 +182,8 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	
 	@Kroll.method
 	public void drawPolygon(KrollDict dict) {
-		if (!dict.containsKey(KEY_COORDINATES)) {
-			Log.e(TAG, "Required parameter 'coordinates' is missing! Aborting...");
-			return;
-		}
+		checkForCoordinates(dict);
+		
 		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
 		List<LatLong> geom = coordinatesToList(coordinates);
 		Color fillColor = Color.TRANSPARENT;
@@ -208,10 +204,8 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	
 	@Kroll.method
 	public void drawMarker(KrollDict dict) {
-		if (!dict.containsKey(KEY_COORDINATES)) {
-			Log.e(TAG, "Required parameter 'coordinates' is missing! Aborting...");
-			return;
-		}
+		checkForCoordinates(dict);
+		
 		String iconPath = null;
 		int hoffset = 0;
 		int voffset = 0;
@@ -226,13 +220,11 @@ public class MapsforgeViewProxy extends TiViewProxy {
 			iconPath = iconPath.replaceAll("file://", "");
 			iconPath = iconPath.trim();
 		} else {
-			Log.e(TAG, "Required parameter iconPath could not be found! Aborting...");
-			return;
+			throw new IllegalArgumentException("Required parameter iconPath could not be found! Aborting...");
 		}
 		
 		if (iconPath.isEmpty()) {
-			Log.e(TAG, "Required parameter iconPath has no value! Aborting...");
-			return;
+			throw new IllegalArgumentException("Required parameter iconPath has no value! Aborting...");
 		}
 				
 		if (dict.containsKey(KEY_HOFFSET)) {
@@ -247,10 +239,8 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	
 	@Kroll.method
 	public void drawCircle(KrollDict dict) {
-		if (!dict.containsKey(KEY_COORDINATES)) {
-			Log.e(TAG, "Required parameter 'coordinates' is missing! Aborting...");
-			return;
-		}
+		checkForCoordinates(dict);
+		
 		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
 		double lat = TiConvert.toDouble(coordinates[0]);
 		double lon = TiConvert.toDouble(coordinates[1]);
@@ -274,8 +264,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		}
 		
 		if (radius < 0) {
-			Log.e(TAG, "Parameter radius can not be <0! Aborting...");
-			return;
+			throw new IllegalArgumentException("Parameter radius can not be <0! Aborting...");
 		}
 		
 		mView.drawCircle(latLong, radius, fillColor, strokeColor, strokeWidth);
@@ -299,6 +288,12 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		}
 		
 		return geom;
+	}
+	
+	private void checkForCoordinates(KrollDict dict) {
+		if (!dict.containsKey(KEY_COORDINATES)) {
+			throw new IllegalArgumentException("Required parameter 'coordinates' is missing! Aborting...");
+		}
 	}
 
 }
