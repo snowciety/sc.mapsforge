@@ -5,9 +5,9 @@ var win = Ti.UI.createWindow({
 var mf = require('org.mapsforge');
 var mapView = mf.createMapsforgeView({ 
 	"scalebar": true, 
-	"center": [47.32, 12.79], 
+	"center": [47.32, 12.79], //Zell am Zee
 	"zoomlevel": "12",
-	"debug": true }); //Create map view
+	"debug": true });
 win.add(mapView);
 win.open();
 /* 	
@@ -15,9 +15,6 @@ win.open();
  * This is due to "createView" in MapsforgeViewProxy is not being called until
  * after the window has been opened.
  */
-
-//mapView.setCenter(47.32, 12.79); //Change current center
-//mapView.setZoomLevel("12"); //Change current zoom level
 mapView.addLayer({ 
 	"name": "osm", 
 	"url": "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -27,15 +24,15 @@ mapView.addLayer({
 	"minZoom": "12"
 	});
 mapView.startLayer("osm"); //All layers can be started with .startLayers()
-//Draw a blue triangle on the map
+//Draw a blue line on the map
 mapView.drawPolyline({
 	"coordinates": [
 		[47.33,12.76], 
 		[47.33,12.78], 
-		[47.35, 12.77], 
-		[47.33,12.76]
+		[47.35, 12.77]
 	], 
-	"color": "blue"});
+	"color": "blue",
+	"strokeWidth": 5});
 //Draw a green polygon with a thick black stroke
 mapView.drawPolygon({
 	"coordinates": [
@@ -65,5 +62,5 @@ mapView.drawCircle({
 	"coordinates": [47.3320, 12.7230],
 	"fillColor": "blue",
 	"strokeColor": "red",
-	"radius": 500
+	"radius": 500 //This is meters!
 	});
