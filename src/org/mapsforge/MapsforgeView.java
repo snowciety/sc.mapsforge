@@ -52,7 +52,6 @@ public class MapsforgeView extends TiUIView {
     
 	private static boolean sDebug = false;
 
-	private MapView mMap;
 	private GraphicFactory mGraphicFactory;
 	private HashMap<String, TileDownloadLayer> mLayers = new HashMap<String, TileDownloadLayer>();
 	
@@ -64,10 +63,9 @@ public class MapsforgeView extends TiUIView {
 
 	public MapsforgeView(TiViewProxy proxy) {
 		super(proxy);		
-		this.mMap = new MapView(proxy.getActivity());
+		MapView mapView = new MapView(proxy.getActivity());
 		this.mGraphicFactory = AndroidGraphicFactory.INSTANCE;
-		setNativeView(mMap);
-		debugMsg("MapView created");
+		setNativeView(mapView);
 	}
 	
 	@Override
@@ -77,11 +75,11 @@ public class MapsforgeView extends TiUIView {
 		if (props.containsKey(KEY_DEBUG)) {
 			sDebug = props.getBoolean(KEY_DEBUG);
 		}
-		
 		debugMsg("processProperties " + props);
 		
+		MapView mapView = (MapView) getNativeView();
 		if (props.containsKey(KEY_SCALEBAR)) {
-			mMap.getMapScaleBar().setVisible(props.getBoolean(KEY_SCALEBAR));
+			mapView.getMapScaleBar().setVisible(props.getBoolean(KEY_SCALEBAR));
 			debugMsg("scalebar set to " + (props.getBoolean(KEY_SCALEBAR) ? "visible" : "hidden"));
 		}
 		
@@ -116,9 +114,10 @@ public class MapsforgeView extends TiUIView {
 	 */
 	public void addLayer(Activity activity, String name, String url, String[] subdomains,
 			int parallelrequests, byte maxzoom, byte minzoom){
+		MapView mapView = (MapView) getNativeView();
 		GenericTileSource tileSource = new GenericTileSource(url, subdomains, parallelrequests, maxzoom, minzoom);
-		TileDownloadLayer downloadLayer = new TileDownloadLayer(createTileCache(activity, name), mMap.getModel().mapViewPosition, tileSource, mGraphicFactory);
-		mMap.getLayerManager().getLayers().add(downloadLayer);
+		TileDownloadLayer downloadLayer = new TileDownloadLayer(createTileCache(activity, name), mapView.getModel().mapViewPosition, tileSource, mGraphicFactory);
+		mapView.getLayerManager().getLayers().add(downloadLayer);
 		mLayers.put(name, downloadLayer);
 		debugMsg("Added layer " + name + " with url " + url);
 	}
@@ -131,7 +130,8 @@ public class MapsforgeView extends TiUIView {
 	public void removeLayer(String name) {
 		Layer l = mLayers.get(name);
 		if (l != null) {
-			mMap.getLayerManager().getLayers().remove(l);
+			MapView mapView = (MapView) getNativeView();
+			mapView.getLayerManager().getLayers().remove(l);
 			mLayers.remove(name);
 		} else {
 			Log.e(TAG, "Layer with name " + name + " could not be found!");
@@ -173,7 +173,8 @@ public class MapsforgeView extends TiUIView {
      * @param lon
      */
     public void setCenter(double lat, double lon) {
-    	mMap.getModel().mapViewPosition.setCenter(new LatLong(lat, lon));
+		MapView mapView = (MapView) getNativeView();
+    	mapView.getModel().mapViewPosition.setCenter(new LatLong(lat, lon));
 		debugMsg("center set to " + Double.toString(lat) + " " + Double.toString(lon));
     }
     
@@ -182,7 +183,8 @@ public class MapsforgeView extends TiUIView {
      * @param zoomlevel
      */
     public void setZoomLevel(byte zoomlevel) {
-    	mMap.getModel().mapViewPosition.setZoomLevel(zoomlevel);
+		MapView mapView = (MapView) getNativeView();
+    	mapView.getModel().mapViewPosition.setZoomLevel(zoomlevel);
 		debugMsg("zoomlevel set to " + Byte.toString(zoomlevel));
     }
     
@@ -200,7 +202,8 @@ public class MapsforgeView extends TiUIView {
 
 		Polyline pl = new Polyline(paintStroke,mGraphicFactory);
 		pl.getLatLongs().addAll(coordinates);
-		mMap.getLayerManager().getLayers().add(pl);
+		MapView mapView = (MapView) getNativeView();
+		mapView.getLayerManager().getLayers().add(pl);
     }
     
     /**
@@ -222,7 +225,8 @@ public class MapsforgeView extends TiUIView {
     	
     	Polygon pg = new Polygon(paintFill, paintStroke, mGraphicFactory);
     	pg.getLatLongs().addAll(coordinates);
-    	mMap.getLayerManager().getLayers().add(pg);
+		MapView mapView = (MapView) getNativeView();
+    	mapView.getLayerManager().getLayers().add(pg);
     }
     
     /**
@@ -251,7 +255,8 @@ public class MapsforgeView extends TiUIView {
 		}
 		
 		Marker m = new Marker(pos, icon, horizontalOffset, verticalOffset);
-		mMap.getLayerManager().getLayers().add(m);
+		MapView mapView = (MapView) getNativeView();
+		mapView.getLayerManager().getLayers().add(m);
     }
     
     /**
@@ -273,7 +278,8 @@ public class MapsforgeView extends TiUIView {
     	paintStroke.setStyle(Style.STROKE);
     	
     	Circle c = new Circle(latLong, radius, paintFill, paintStroke);
-    	mMap.getLayerManager().getLayers().add(c);
+		MapView mapView = (MapView) getNativeView();
+    	mapView.getLayerManager().getLayers().add(c);
     }
     
     private TileCache createTileCache(Activity activity, String name) {
