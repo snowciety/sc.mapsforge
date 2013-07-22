@@ -58,5 +58,12 @@ public class GenericTileSource implements TileSource {
 	public byte getZoomLevelMin() {
 		return mMinzoom;
 	}
-
+	
+	@Override
+	public int hashCode() {
+	         final int prime = 31;
+	         int result = 1;
+	         result = prime * result + this.mUrl.hashCode();
+	         return result;
+	 }
 }
