@@ -103,7 +103,7 @@ public class MapsforgeView extends TiUIView {
 	}
 	
 	/**
-	 * Adds a tile layer to the map view
+	 * Adds a tile layer using a FileSystemTileCache to the map view
 	 * @param activity	Context of the map view.
 	 * @param name	Identifier for the layer.
 	 * @param url	URL to the tile source. Must have {z},{x} and {y} place holders.
