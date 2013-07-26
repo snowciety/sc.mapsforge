@@ -23,7 +23,8 @@ mapView.addLayer({
 	"maxZoom": "18",
 	"minZoom": "12"
 	});
-mapView.startLayer("osm"); //All layers can be started with .startLayers()
+mapView.startLayer("osm"); //All download layers can be started with .startLayers()
+
 //Draw a blue line on the map
 mapView.drawPolyline({
 	"coordinates": [
@@ -57,9 +58,16 @@ mapView.drawMarker({
 	"hOffset": 5,
 	"vOffset": 4
 	});
+//Draw a sized marker (of the Zuck)
+//Original icon is 100x99 pixels
+mapView.drawMarker({
+	"iconPath": "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-prn2/202896_4_1782288297_s.jpg",
+	"coordinates": [47.3160, 12.7820],
+	"iconSize": [64, 64] //New size in pixels
+	});
 //Draw a circle
 mapView.drawCircle({
-	"coordinates": [47.3320, 12.7230],
+	"coordinates": [47.2920, 12.7830],
 	"fillColor": "blue",
 	"strokeColor": "red",
 	"radius": 500 //This is meters!

@@ -35,6 +35,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	private static final String KEY_HOFFSET = "hOffset";
 	private static final String KEY_VOFFSET = "vOffset";
 	private static final String KEY_ICONPATH = "iconPath";
+	private static final String KEY_ICONSIZE = "iconSize";
 	private static final String KEY_RADIUS = "radius";
 	private static final String TAG = "MapsforgeProxy";
 	
@@ -258,6 +259,8 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		String iconPath = null;
 		int hoffset = 0;
 		int voffset = 0;
+		int iconWidth = 0;
+		int iconHeight = 0;
 		
 		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
 		double lat = TiConvert.toDouble(coordinates[0]);
@@ -282,8 +285,17 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		if (dict.containsKey(KEY_VOFFSET)) {
 			voffset = TiConvert.toInt(dict.get(KEY_VOFFSET));
 		}
+		
+		if (dict.containsKey(KEY_ICONSIZE)) {
+			Object[] iconSize = (Object[]) dict.get(KEY_ICONSIZE);
+			if (iconSize.length != 2) {
+				throw new IllegalArgumentException("Parameter iconSize takes two and only two values!");
+			}
+			iconWidth 	= TiConvert.toInt(iconSize[0]);
+			iconHeight 	= TiConvert.toInt(iconSize[1]);
+		}
 
-		mView.drawMarker(pos, iconPath, hoffset, voffset);
+		mView.drawMarker(pos, iconPath, hoffset, voffset, iconWidth, iconHeight);
 	}
 	
 	/**

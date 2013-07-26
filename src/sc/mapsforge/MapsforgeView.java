@@ -39,6 +39,8 @@ import org.mapsforge.map.layer.overlay.Polygon;
 import org.mapsforge.map.layer.overlay.Polyline;
 
 import android.app.Activity;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
 public class MapsforgeView extends TiUIView {
 	
@@ -237,7 +239,7 @@ public class MapsforgeView extends TiUIView {
      * @param horizontalOffset
      * @param verticalOffset
      */
-    public void drawMarker(LatLong pos, String iconPath, int horizontalOffset, int verticalOffset) {
+    public void drawMarker(LatLong pos, String iconPath, int horizontalOffset, int verticalOffset, int iconWidth, int iconHeight) {
     	InputStream is = createInputStream(iconPath);
     	if (is == null) {
     		Log.e(TAG, "Unable to retrieve marker image. No marker drawn.");
@@ -253,6 +255,10 @@ public class MapsforgeView extends TiUIView {
 			return;
 		} finally {
 			IOUtils.closeQuietly(is);
+		}
+		
+		if ((iconWidth > 0 && iconHeight > 0) && (iconWidth != icon.getWidth() || iconHeight != icon.getHeight())) {
+			icon = resizeBitmap(icon, iconWidth, iconHeight);
 		}
 		
 		Marker m = new Marker(pos, icon, horizontalOffset, verticalOffset);
@@ -333,5 +339,22 @@ public class MapsforgeView extends TiUIView {
     		}
     	}
     	return is;
+    }
+    
+    private static Bitmap resizeBitmap(Bitmap bitmap, int width, int height) {
+		/*
+		 * TODO Is this really the easiest way to resize a bitmap
+		 *  when using mapsforge?
+		 */
+		debugMsg(String.format("Resizing bitmap from %dx%d to %dx%d", bitmap.getWidth(), bitmap.getHeight(), width, height));
+		android.graphics.Bitmap aBitmap = AndroidGraphicFactory.getBitmap(bitmap);
+		android.graphics.Bitmap scaled = android.graphics.Bitmap.createScaledBitmap(aBitmap, width, height, false);
+		Drawable d = new BitmapDrawable(scaled);
+		bitmap = AndroidGraphicFactory.convertToBitmap(d);
+		//Bitmaps are evil, null references to ensure they get GC'd
+		d = null;
+		scaled = null;
+		aBitmap = null;
+		return bitmap;
     }
 }
