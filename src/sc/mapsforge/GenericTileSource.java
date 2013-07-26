@@ -1,4 +1,4 @@
-package org.mapsforge;
+package sc.mapsforge;
 
 import java.net.MalformedURLException;
 import java.net.URL;

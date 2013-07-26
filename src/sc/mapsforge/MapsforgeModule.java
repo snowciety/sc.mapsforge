@@ -1,4 +1,4 @@
-package org.mapsforge;
+package sc.mapsforge;
 
 
 import org.appcelerator.kroll.KrollModule;
@@ -9,7 +9,7 @@ import org.appcelerator.kroll.common.Log;
 
 import android.app.Activity;
 
-@Kroll.module(name="Mapsforge", id="org.mapsforge")
+@Kroll.module(name="Mapsforge", id="sc.mapsforge")
 public class MapsforgeModule extends KrollModule
 {
 

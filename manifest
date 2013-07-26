@@ -12,7 +12,7 @@ copyright: Copyright (c) 2013 by Your Company
 
 # these should not be edited
 name: mapsforge
-moduleid: org.mapsforge
+moduleid: sc.mapsforge
 guid: c42f08d2-a875-4ef0-a5ef-89e48251245f
 platform: android
 minsdk: 3.1.1.GA

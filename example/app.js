@@ -2,7 +2,7 @@ var win = Ti.UI.createWindow({
 	backgroundColor:'white'
 });
 
-var mf = require('org.mapsforge');
+var mf = require('sc.mapsforge');
 var mapView = mf.createMapsforgeView({ 
 	"scalebar": true, 
 	"center": [47.32, 12.79], //Zell am Zee

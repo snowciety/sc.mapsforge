@@ -8,6 +8,6 @@
 	<classpathentry kind="lib" path="/home/erik/.titanium/mobilesdk/linux/3.1.1.GA/android/titanium.jar"/>
 	<classpathentry kind="lib" path="/home/erik/.titanium/mobilesdk/linux/3.1.1.GA/android/kroll-common.jar"/>
 	<classpathentry kind="lib" path="/home/erik/.titanium/mobilesdk/linux/3.1.1.GA/android/kroll-apt.jar"/>
-	<classpathentry kind="lib" path="/home/erik/Dropbox/dev/titanium/mapsforge/lib/mapsforge-map-android-0.4.0-SNAPSHOT-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="/home/erik/Dropbox/dev/titanium/sc.mapsforge/lib/mapsforge-map-android-0.4.0-SNAPSHOT-jar-with-dependencies.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

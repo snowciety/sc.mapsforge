@@ -1,4 +1,4 @@
-package org.mapsforge;
+package sc.mapsforge;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,6 +19,7 @@ import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.view.TiUIView;
+
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.graphics.Color;
 import org.mapsforge.core.graphics.GraphicFactory;
