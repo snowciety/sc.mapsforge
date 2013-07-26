@@ -337,12 +337,13 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	}
 	
 	private List<LatLong> coordinatesToList(Object[] coordinates) {
-		if (coordinates.length < 2) {
-			throw new IllegalArgumentException("A coordinate pair was not given!");
-		}
 		List<LatLong> geom = new ArrayList<LatLong>();
 		for(int i = 0; i < coordinates.length; i++) {
 			Object[] pair = (Object[]) coordinates[i];
+			if (pair.length < 2) {
+				throw new IllegalArgumentException("A coordinate pair was not given! List is if size " 
+						+ Integer.toString(pair.length));
+			}
 			double lat = TiConvert.toDouble(pair[0]);
 			double lon = TiConvert.toDouble(pair[1]);
 			geom.add(new LatLong(lat, lon));
