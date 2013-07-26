@@ -6,3 +6,4 @@ libs
 dist
 *.zip
 .apt_generated
+.settings
