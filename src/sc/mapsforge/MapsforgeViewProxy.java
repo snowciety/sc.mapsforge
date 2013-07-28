@@ -41,6 +41,9 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	
 	private static boolean sDebug = false;
 	
+	private Double[] mCenter;
+	private Byte mZoomLevel;
+	
 	private MapsforgeView mView;
 	
 	private static void debugMsg(String msg) {
@@ -71,27 +74,50 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		debugMsg("handleCreationDict " + options.toString());
 	}
 	
-	/**
+	/*
 	 * Kroll methods
 	 */
 	
 	/**
 	 * Sets the current center of the map view.
-	 * @param lat	latitude in degrees.
-	 * @param lon	longitude in degrees.
+	 * @param center	a pair of latitude and longitude coordinates
 	 */
-	@Kroll.method
-	public void setCenter(double lat, double lon) {
-		mView.setCenter(lat,lon);
+	@Kroll.setProperty @Kroll.method
+	public void setCenter(Double[] center) {
+		if (center.length != 2) {
+			throw new IllegalArgumentException("setCenter needs a latitude and longitude: [lat, lon]");
+		}
+		mCenter = center;
+		mView.setCenter(mCenter[0], mCenter[1]);
+	}
+	
+	/**
+	 * Returns the current center position as a double pair. [lat, lon]
+	 */
+	@Kroll.getProperty @Kroll.method
+	public Double[] getCenter() {
+		return mCenter;
 	}
 	
 	/**
 	 * Sets the current zoom level for the map view.
 	 * @param zoomlevel	zoom level.
 	 */
-	@Kroll.method
-	public void setZoomLevel(String zoomlevel) {
-		mView.setZoomLevel(Byte.valueOf(zoomlevel));
+	@Kroll.setProperty @Kroll.method
+	public void setZoomLevel(Byte zoomLevel) {
+		if (zoomLevel < 0 ) {
+			throw new IllegalArgumentException("Zoom level has to be greater than 0!");
+		}
+		mZoomLevel = zoomLevel;
+		mView.setZoomLevel(mZoomLevel);
+	}
+	
+	/**
+	 * Returns the current zoom level of the map view.
+	 * @return	the current set zoom level
+	 */
+	public Byte getZoomLevel() {
+		return mZoomLevel;
 	}
 	
 	/**

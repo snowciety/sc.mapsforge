@@ -94,7 +94,7 @@ public class MapsforgeView extends TiUIView {
 		}
 		
 		if (props.containsKey(KEY_ZOOMLEVEL)) {
-			byte zoomlevel = Byte.valueOf(props.getString(KEY_ZOOMLEVEL));
+			byte zoomlevel = (byte) props.get(KEY_ZOOMLEVEL);
 			setZoomLevel(zoomlevel);
 		}
 	}
