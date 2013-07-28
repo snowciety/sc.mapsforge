@@ -197,7 +197,7 @@ public class MapsforgeView extends TiUIView {
      * @param color
      * @param strokeWidth
      */
-    public void drawPolyline(List<LatLong> coordinates, Color color, float strokeWidth) {
+    public void createPolyline(List<LatLong> coordinates, Color color, float strokeWidth) {
 		Paint paintStroke = mGraphicFactory.createPaint();
 		paintStroke.setStyle(Style.STROKE);
 		paintStroke.setColor(color);
@@ -216,7 +216,7 @@ public class MapsforgeView extends TiUIView {
      * @param strokeColor
      * @param strokeWidth
      */
-    public void drawPolygon(List<LatLong> coordinates, Color fillColor, Color strokeColor, float strokeWidth) {
+    public void createPolygon(List<LatLong> coordinates, Color fillColor, Color strokeColor, float strokeWidth) {
     	Paint paintFill = mGraphicFactory.createPaint();
     	paintFill.setStyle(Style.FILL);
     	paintFill.setColor(fillColor);
@@ -239,7 +239,7 @@ public class MapsforgeView extends TiUIView {
      * @param horizontalOffset
      * @param verticalOffset
      */
-    public void drawMarker(LatLong pos, String iconPath, int horizontalOffset, int verticalOffset, int iconWidth, int iconHeight) {
+    public void createMarker(LatLong pos, String iconPath, int horizontalOffset, int verticalOffset, int iconWidth, int iconHeight) {
     	InputStream is = createInputStream(iconPath);
     	if (is == null) {
     		Log.e(TAG, "Unable to retrieve marker image. No marker drawn.");
@@ -274,7 +274,7 @@ public class MapsforgeView extends TiUIView {
      * @param strokeColor
      * @param strokeWidth
      */
-    public void drawCircle(LatLong latLong, float radius, Color fillColor, Color strokeColor, float strokeWidth) {
+    public void createCircle(LatLong latLong, float radius, Color fillColor, Color strokeColor, float strokeWidth) {
     	Paint paintFill = mGraphicFactory.createPaint();
     	paintFill.setColor(fillColor);
     	paintFill.setStyle(Style.FILL);

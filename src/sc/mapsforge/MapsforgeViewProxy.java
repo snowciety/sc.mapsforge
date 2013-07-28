@@ -220,7 +220,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * @param dict	dictionary with key-value pairs: {key:value}.
 	 */
 	@Kroll.method
-	public void drawPolyline(KrollDict dict) {
+	public void createPolyline(KrollDict dict) {
 		checkForCoordinates(dict);
 		
 		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
@@ -248,7 +248,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * @param dict	dictionary with key-value pairs: {key:value}.
 	 */
 	@Kroll.method
-	public void drawPolygon(KrollDict dict) {
+	public void createPolygon(KrollDict dict) {
 		checkForCoordinates(dict);
 		
 		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
@@ -279,7 +279,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * @param dict	dictionary with key-value pairs: {key:value}.
 	 */
 	@Kroll.method
-	public void drawMarker(KrollDict dict) {
+	public void createMarker(KrollDict dict) {
 		checkForCoordinates(dict);
 		
 		String iconPath = null;
@@ -335,7 +335,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * @param dict	dictionary with key-value pairs: {key:value}.
 	 */
 	@Kroll.method
-	public void drawCircle(KrollDict dict) {
+	public void createCircle(KrollDict dict) {
 		checkForCoordinates(dict);
 		
 		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
