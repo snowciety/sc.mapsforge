@@ -30,7 +30,7 @@ mapView.startLayer("osm"); //All download layers can be started with .startLayer
 
 //Draw a blue line on the map
 mapView.createPolyline({
-	"coordinates": [
+	"latlngs": [
 		[47.33,12.76], 
 		[47.33,12.78], 
 		[47.35, 12.77]
@@ -39,7 +39,7 @@ mapView.createPolyline({
 	"strokeWidth": 5});
 //Draw a green polygon with a thick black stroke
 mapView.createPolygon({
-	"coordinates": [
+	"latlngs": [
 		[47.3045, 12.7345], 
 		[47.3045, 12.7545], 
 		[47.3235, 12.7545], 
@@ -52,13 +52,13 @@ mapView.createPolygon({
 //Draw a marker
 var marker = mapView.createMarker({
 	"iconPath": "http://www.google.com/mapfiles/marker.png",
-	"coordinate": [47.3100, 12.7300]
+	"latlng": [47.3100, 12.7300]
 	});
 Ti.API.info('Created marker: ' + JSON.stringify(marker));
 //Draw a marker at the same position as above but with offset
 mapView.createMarker({
 	"iconPath": "http://www.google.com/mapfiles/dd-start.png",
-	"coordinate": [47.3100, 12.7300],
+	"latlng": [47.3100, 12.7300],
 	"hOffset": 5,
 	"vOffset": 4
 	});
@@ -66,12 +66,12 @@ mapView.createMarker({
 //Original icon is 100x99 pixels
 mapView.createMarker({
 	"iconPath": "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-prn2/202896_4_1782288297_s.jpg",
-	"coordinate": [47.3160, 12.7820],
+	"latlng": [47.3160, 12.7820],
 	"iconSize": [64, 64] //New size in pixels
 	});
 //Draw a circle
 mapView.createCircle({
-	"coordinate": [47.2920, 12.7830],
+	"latlng": [47.2920, 12.7830],
 	"fillColor": "blue",
 	"strokeColor": "red",
 	"radius": 500 //This is meters!
