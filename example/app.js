@@ -50,14 +50,15 @@ mapView.createPolygon({
 	"strokeColor": "black",
 	"strokeWidth": 5});
 //Draw a marker
-mapView.createMarker({
+var marker = mapView.createMarker({
 	"iconPath": "http://www.google.com/mapfiles/marker.png",
-	"coordinates": [47.3100, 12.7300]
+	"coordinate": [47.3100, 12.7300]
 	});
+Ti.API.info('Created marker: ' + JSON.stringify(marker));
 //Draw a marker at the same position as above but with offset
 mapView.createMarker({
 	"iconPath": "http://www.google.com/mapfiles/dd-start.png",
-	"coordinates": [47.3100, 12.7300],
+	"coordinate": [47.3100, 12.7300],
 	"hOffset": 5,
 	"vOffset": 4
 	});
@@ -65,12 +66,12 @@ mapView.createMarker({
 //Original icon is 100x99 pixels
 mapView.createMarker({
 	"iconPath": "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-prn2/202896_4_1782288297_s.jpg",
-	"coordinates": [47.3160, 12.7820],
+	"coordinate": [47.3160, 12.7820],
 	"iconSize": [64, 64] //New size in pixels
 	});
 //Draw a circle
 mapView.createCircle({
-	"coordinates": [47.2920, 12.7830],
+	"coordinate": [47.2920, 12.7830],
 	"fillColor": "blue",
 	"strokeColor": "red",
 	"radius": 500 //This is meters!

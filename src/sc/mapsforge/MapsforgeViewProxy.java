@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.appcelerator.kroll.KrollDict;
-import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.proxy.TiViewProxy;
@@ -28,6 +27,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	private static final String KEY_MAXZOOM = "maxZoom";
 	private static final String KEY_MINZOOM = "minZoom";
 	private static final String KEY_COLOR = "color";
+	private static final String KEY_COORDINATE = "coordinate";
 	private static final String KEY_COORDINATES = "coordinates";
 	private static final String KEY_FILLCOLOR = "fillColor";
 	private static final String KEY_STROKECOLOR = "strokeColor";
@@ -42,7 +42,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	private static boolean sDebug = false;
 	
 	private Double[] mCenter;
-	private Byte mZoomLevel;
+	private int mZoomLevel;
 	
 	private MapsforgeView mView;
 	
@@ -104,7 +104,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * @param zoomlevel	zoom level.
 	 */
 	@Kroll.setProperty @Kroll.method
-	public void setZoomLevel(Byte zoomLevel) {
+	public void setZoomLevel(int zoomLevel) {
 		if (zoomLevel < 0 ) {
 			throw new IllegalArgumentException("Zoom level has to be greater than 0!");
 		}
@@ -116,7 +116,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * Returns the current zoom level of the map view.
 	 * @return	the current set zoom level
 	 */
-	public Byte getZoomLevel() {
+	public int getZoomLevel() {
 		return mZoomLevel;
 	}
 	
@@ -220,7 +220,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * @param dict	dictionary with key-value pairs: {key:value}.
 	 */
 	@Kroll.method
-	public void createPolyline(KrollDict dict) {
+	public HashMap createPolyline(KrollDict dict) {
 		checkForCoordinates(dict);
 		
 		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
@@ -235,7 +235,9 @@ public class MapsforgeViewProxy extends TiViewProxy {
 			strokeWidth = TiConvert.toFloat(dict.get(KEY_STROKEWIDTH));
 		}
 				
-		mView.drawPolyline(geom, color, strokeWidth);
+		mView.createPolyline(geom, color, strokeWidth);
+		
+		return dict;
 	}
 	
 	/**
@@ -248,7 +250,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * @param dict	dictionary with key-value pairs: {key:value}.
 	 */
 	@Kroll.method
-	public void createPolygon(KrollDict dict) {
+	public HashMap createPolygon(KrollDict dict) {
 		checkForCoordinates(dict);
 		
 		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
@@ -266,7 +268,9 @@ public class MapsforgeViewProxy extends TiViewProxy {
 			strokeWidth = TiConvert.toFloat(dict.get(KEY_STROKEWIDTH));
 		}
 		
-		mView.drawPolygon(geom, fillColor, strokeColor, strokeWidth);
+		mView.createPolygon(geom, fillColor, strokeColor, strokeWidth);
+		
+		return dict;
 	}
 	
 	/**
@@ -279,18 +283,21 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * @param dict	dictionary with key-value pairs: {key:value}.
 	 */
 	@Kroll.method
-	public void createMarker(KrollDict dict) {
-		checkForCoordinates(dict);
+	public HashMap createMarker(KrollDict dict) {
+		checkForCoordinate(dict);
+		
+		Object[] coordinate = (Object[]) dict.get(KEY_COORDINATE);
+		if (coordinate.length != 2 ) {
+			throw new IllegalArgumentException("A coordinate pair was not given!");
+		}
 		
 		String iconPath = null;
 		int hoffset = 0;
 		int voffset = 0;
 		int iconWidth = 0;
 		int iconHeight = 0;
-		
-		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
-		double lat = TiConvert.toDouble(coordinates[0]);
-		double lon = TiConvert.toDouble(coordinates[1]);
+		double lat = TiConvert.toDouble(coordinate[0]);
+		double lon = TiConvert.toDouble(coordinate[1]);
 		LatLong pos = new LatLong(lat, lon);
 				
 		if (dict.containsKey(KEY_ICONPATH)) {
@@ -321,7 +328,9 @@ public class MapsforgeViewProxy extends TiViewProxy {
 			iconHeight 	= TiConvert.toInt(iconSize[1]);
 		}
 
-		mView.drawMarker(pos, iconPath, hoffset, voffset, iconWidth, iconHeight);
+		mView.createMarker(pos, iconPath, hoffset, voffset, iconWidth, iconHeight);
+		
+		return dict;
 	}
 	
 	/**
@@ -335,12 +344,12 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * @param dict	dictionary with key-value pairs: {key:value}.
 	 */
 	@Kroll.method
-	public void createCircle(KrollDict dict) {
-		checkForCoordinates(dict);
+	public HashMap createCircle(KrollDict dict) {
+		checkForCoordinate(dict);
 		
-		Object[] coordinates = (Object[]) dict.get(KEY_COORDINATES);
-		double lat = TiConvert.toDouble(coordinates[0]);
-		double lon = TiConvert.toDouble(coordinates[1]);
+		Object[] coordinate = (Object[]) dict.get(KEY_COORDINATE);
+		double lat = TiConvert.toDouble(coordinate[0]);
+		double lon = TiConvert.toDouble(coordinate[1]);
 		LatLong latLong = new LatLong(lat, lon);
 		
 		Color fillColor = Color.RED;
@@ -361,10 +370,12 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		}
 		
 		if (radius < 0) {
-			throw new IllegalArgumentException("Parameter radius can not be <0! Aborting...");
+			throw new IllegalArgumentException("Parameter 'radius' can not be <0! Aborting...");
 		}
 		
-		mView.drawCircle(latLong, radius, fillColor, strokeColor, strokeWidth);
+		mView.createCircle(latLong, radius, fillColor, strokeColor, strokeWidth);
+		
+		return dict;
 	}
 	
 	/**
@@ -380,7 +391,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		for(int i = 0; i < coordinates.length; i++) {
 			Object[] pair = (Object[]) coordinates[i];
 			if (pair.length < 2) {
-				throw new IllegalArgumentException("A coordinate pair was not given! List is if size " 
+				throw new IllegalArgumentException("A coordinate pair was not given! List is of size " 
 						+ Integer.toString(pair.length));
 			}
 			double lat = TiConvert.toDouble(pair[0]);
@@ -391,9 +402,15 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		return geom;
 	}
 	
+	private void checkForCoordinate(KrollDict dict) {
+		if (!dict.containsKey(KEY_COORDINATE))  {
+			throw new IllegalArgumentException("Required parameter 'coordinates' or 'coordinate' is missing! Aborting...");
+		}
+	}
+	
 	private void checkForCoordinates(KrollDict dict) {
-		if (!dict.containsKey(KEY_COORDINATES)) {
-			throw new IllegalArgumentException("Required parameter 'coordinates' is missing! Aborting...");
+		if (!dict.containsKey(KEY_COORDINATES))  {
+			throw new IllegalArgumentException("Required parameter 'coordinates' or 'coordinate' is missing! Aborting...");
 		}
 	}
 

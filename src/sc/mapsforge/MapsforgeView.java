@@ -94,7 +94,7 @@ public class MapsforgeView extends TiUIView {
 		}
 		
 		if (props.containsKey(KEY_ZOOMLEVEL)) {
-			byte zoomlevel = (byte) props.get(KEY_ZOOMLEVEL);
+			int zoomlevel = props.getInt(KEY_ZOOMLEVEL);
 			setZoomLevel(zoomlevel);
 		}
 	}
@@ -185,10 +185,10 @@ public class MapsforgeView extends TiUIView {
      * Sets the zoom level of the map view.
      * @param zoomlevel
      */
-    public void setZoomLevel(byte zoomlevel) {
+    public void setZoomLevel(int zoomlevel) {
 		MapView mapView = (MapView) getNativeView();
-    	mapView.getModel().mapViewPosition.setZoomLevel(zoomlevel);
-		debugMsg("zoomlevel set to " + Byte.toString(zoomlevel));
+    	mapView.getModel().mapViewPosition.setZoomLevel((byte) zoomlevel);
+		debugMsg("zoomlevel set to " + Integer.toString(zoomlevel));
     }
     
     /**
