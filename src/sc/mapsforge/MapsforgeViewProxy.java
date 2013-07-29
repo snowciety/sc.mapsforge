@@ -21,6 +21,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	
 	private static final String KEY_DEBUG = "debug";
 	private static final String KEY_ID = "id";
+	private static final String KEY_LAYERTYPE = "type";
 	private static final String KEY_URL = "url";
 	private static final String KEY_NAME = "name";
 	private static final String KEY_SUBDOMAINS = "subdomains";
@@ -39,6 +40,11 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	private static final String KEY_ICONSIZE = "iconSize";
 	private static final String KEY_RADIUS = "radius";
 	private static final String TAG = "MapsforgeProxy";
+	
+	private static final String TYPE_POLYLINE = "polyline";
+	private static final String TYPE_POLYGON = "polygon";
+	private static final String TYPE_CIRCLE = "circle";
+	private static final String TYPE_MARKER = "marker";
 	
 	private static boolean sDebug = false;
 	
@@ -188,11 +194,13 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * @param id	the layer identifier.
 	 */
 	@Kroll.method
-	public void removeLayer(String id) {
+	public boolean removeLayer(String id) {
 		if (mView.removeLayer(id)) {
 			debugMsg("Layer with id "+ id +" was removed");
+			return true;
 		} else {
-			Log.e(TAG, "Layer with id " + id + " could not bew removed!");
+			Log.e(TAG, "Layer with id " + id + " could not be removed!");
+			return false;
 		}
 	}
 	
@@ -201,8 +209,51 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * @param id	the layer identifier.
 	 */
 	@Kroll.method
-	public void removeLayer(int id) {
-		removeLayer(Integer.toString(id));
+	public boolean removeLayer(int id) {
+		return removeLayer(Integer.toString(id));
+	}
+	
+	/**
+	 * Update a layer currently in the LayerManager.
+	 * This method removes the current layer and replaces it with
+	 *  a new one.
+	 * Note! The old object is now useless and you need to update your
+	 * reference with the return value from this method!
+	 * Note! Only supports layers such as Polyline, Polygon etc.
+	 * @param dict	the layer as returned on creation.
+	 */
+	@Kroll.method
+	public HashMap updateLayer(KrollDict dict) {
+		debugMsg("updateLayer dict contains " + dict.toString());
+		if (!dict.containsKey(KEY_ID)) {
+			Log.e(TAG, "Could not find the layer ID!");
+			return null;
+		}
+		if (!dict.containsKey(KEY_LAYERTYPE)) {
+			Log.e(TAG, "Could not find the layer type!");
+			return null;
+		}
+		int id = TiConvert.toInt(dict.get(KEY_ID));
+		//First remove the old one
+		if (!removeLayer(id)) {
+			Log.e(TAG, "Could not update layer, does it exist?");
+			return null;
+		}
+		//Create a new layer using the parameters supplied in
+		//the argument (dict).
+		String type = TiConvert.toString(dict.get(KEY_LAYERTYPE));
+		if (type.equals(TYPE_CIRCLE)) {
+			return createCircle(dict);
+		} else if (type.equals(TYPE_MARKER)) {
+			return createMarker(dict);
+		} else if (type.equals(TYPE_POLYGON)) {
+			return createPolygon(dict);
+		} else if (type.equals(TYPE_POLYLINE)) {
+			return createPolyline(dict);
+
+		} else {
+			throw new UnknownError("The layer type " + dict.getString(KEY_LAYERTYPE) + " is not defined!");
+		}
 	}
 	
 	/**
@@ -248,6 +299,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 				
 		int id = mView.createPolyline(geom, color, strokeWidth);
 		dict.put(KEY_ID, id);
+		dict.put(KEY_LAYERTYPE, TYPE_POLYLINE);
 		
 		return dict;
 	}
@@ -282,6 +334,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		
 		int id = mView.createPolygon(geom, fillColor, strokeColor, strokeWidth);
 		dict.put(KEY_ID, id);
+		dict.put(KEY_LAYERTYPE, TYPE_POLYGON);
 
 		return dict;
 	}
@@ -341,6 +394,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 
 		int id = mView.createMarker(pos, iconPath, hoffset, voffset, iconWidth, iconHeight);
 		dict.put(KEY_ID, id);
+		dict.put(KEY_LAYERTYPE, TYPE_MARKER);
 
 		return dict;
 	}
@@ -387,6 +441,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		
 		int id = mView.createCircle(latLong, radius, fillColor, strokeColor, strokeWidth);
 		dict.put(KEY_ID, id);
+		dict.put(KEY_LAYERTYPE, TYPE_CIRCLE);
 
 		return dict;
 	}
