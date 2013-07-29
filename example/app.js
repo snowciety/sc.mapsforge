@@ -5,13 +5,13 @@ var win = Ti.UI.createWindow({
 var mf = require('sc.mapsforge');
 var mapView = mf.createMapsforgeView({ 
 	"scalebar": true, 
-	"center": [48.32, 14.79], //Unknown location
+	"centerLatlng": [48.32, 14.79], //Unknown location
 	"zoomlevel": 18, //Bogus
 	"debug": true });
 win.add(mapView);
 win.open();
 //Set center and zoom level on mapview using properties
-mapView.center = [47.32, 12.79]; //Center at Zell am Zee
+mapView.centerLatlng = [47.32, 12.79]; //Center at Zell am Zee
 mapView.zoomLevel = 12;
 /* 	
  * Layers etc have to be initialized after the window has been opened

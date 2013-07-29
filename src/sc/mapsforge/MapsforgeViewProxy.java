@@ -41,7 +41,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	
 	private static boolean sDebug = false;
 	
-	private Double[] mCenter;
+	private Double[] mCenterLatlng;
 	private int mZoomLevel;
 	
 	private MapsforgeView mView;
@@ -83,20 +83,20 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * @param center	a pair of latitude and longitude coordinates
 	 */
 	@Kroll.setProperty @Kroll.method
-	public void setCenter(Double[] center) {
+	public void setCenterLatlng(Double[] center) {
 		if (center.length != 2) {
 			throw new IllegalArgumentException("setCenter needs a latitude and longitude: [lat, lon]");
 		}
-		mCenter = center;
-		mView.setCenter(mCenter[0], mCenter[1]);
+		mCenterLatlng = center;
+		mView.setCenter(mCenterLatlng[0], mCenterLatlng[1]);
 	}
 	
 	/**
 	 * Returns the current center position as a double pair. [lat, lon]
 	 */
 	@Kroll.getProperty @Kroll.method
-	public Double[] getCenter() {
-		return mCenter;
+	public Double[] getCenterLatlng() {
+		return mCenterLatlng;
 	}
 	
 	/**

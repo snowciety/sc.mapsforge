@@ -47,7 +47,7 @@ public class MapsforgeView extends TiUIView {
 	private static final String TAG = "MapsforgeView";
 	private static final String KEY_DEBUG = "debug";
 	private static final String KEY_SCALEBAR = "scalebar";
-	private static final String KEY_CENTER = "center";
+	private static final String KEY_CENTER = "centerLatlng";
 	private static final String KEY_ZOOMLEVEL = "zoomlevel";
 
     private static final int TIMEOUT_CONNECT = 5000;
