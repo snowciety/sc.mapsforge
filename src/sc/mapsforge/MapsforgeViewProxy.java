@@ -20,6 +20,7 @@ import android.app.Activity;
 public class MapsforgeViewProxy extends TiViewProxy {
 	
 	private static final String KEY_DEBUG = "debug";
+	private static final String KEY_ID = "id";
 	private static final String KEY_URL = "url";
 	private static final String KEY_NAME = "name";
 	private static final String KEY_SUBDOMAINS = "subdomains";
@@ -223,7 +224,8 @@ public class MapsforgeViewProxy extends TiViewProxy {
 			strokeWidth = TiConvert.toFloat(dict.get(KEY_STROKEWIDTH));
 		}
 				
-		mView.createPolyline(geom, color, strokeWidth);
+		int id = mView.createPolyline(geom, color, strokeWidth);
+		dict.put(KEY_ID, id);
 		
 		return dict;
 	}
@@ -256,8 +258,9 @@ public class MapsforgeViewProxy extends TiViewProxy {
 			strokeWidth = TiConvert.toFloat(dict.get(KEY_STROKEWIDTH));
 		}
 		
-		mView.createPolygon(geom, fillColor, strokeColor, strokeWidth);
-		
+		int id = mView.createPolygon(geom, fillColor, strokeColor, strokeWidth);
+		dict.put(KEY_ID, id);
+
 		return dict;
 	}
 	
@@ -314,8 +317,9 @@ public class MapsforgeViewProxy extends TiViewProxy {
 			iconHeight 	= TiConvert.toInt(iconSize[1]);
 		}
 
-		mView.createMarker(pos, iconPath, hoffset, voffset, iconWidth, iconHeight);
-		
+		int id = mView.createMarker(pos, iconPath, hoffset, voffset, iconWidth, iconHeight);
+		dict.put(KEY_ID, id);
+
 		return dict;
 	}
 	
@@ -359,8 +363,9 @@ public class MapsforgeViewProxy extends TiViewProxy {
 			throw new IllegalArgumentException("Parameter 'radius' can not be <0!");
 		}
 		
-		mView.createCircle(latLong, radius, fillColor, strokeColor, strokeWidth);
-		
+		int id = mView.createCircle(latLong, radius, fillColor, strokeColor, strokeWidth);
+		dict.put(KEY_ID, id);
+
 		return dict;
 	}
 	

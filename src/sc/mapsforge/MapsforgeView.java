@@ -56,7 +56,7 @@ public class MapsforgeView extends TiUIView {
 	private static boolean sDebug = false;
 
 	private GraphicFactory mGraphicFactory;
-	private HashMap<String, TileDownloadLayer> mLayers = new HashMap<String, TileDownloadLayer>();
+	private HashMap<String, Layer> mLayers = new HashMap<String, Layer>();
 	
 	private static void debugMsg(String msg) {
 		if (sDebug) {
@@ -130,14 +130,16 @@ public class MapsforgeView extends TiUIView {
 	 * Removes a specific layer from the map view.
 	 * @param name	Layer identifier as specified in addLayer().
 	 */
-	public void removeLayer(String name) {
+	public boolean removeLayer(String name) {
 		Layer l = mLayers.get(name);
 		if (l != null) {
 			MapView mapView = (MapView) getNativeView();
 			mapView.getLayerManager().getLayers().remove(l);
 			mLayers.remove(name);
+			return true;
 		} else {
 			Log.e(TAG, "Layer with name " + name + " could not be found!");
+			return false;
 		}
 	}
     
@@ -145,11 +147,13 @@ public class MapsforgeView extends TiUIView {
      * Starts all tile layers.
      */
     public void startLayers() {
-    	Iterator<Entry<String, TileDownloadLayer>> it = mLayers.entrySet().iterator();
+    	Iterator<Entry<String, Layer>> it = mLayers.entrySet().iterator();
     	while (it.hasNext()) {
-    		Entry<String, TileDownloadLayer> pairs = (Entry<String, TileDownloadLayer>) it.next();
-    		pairs.getValue().start();
-			debugMsg("Started layer " + pairs.getKey());
+    		Entry<String, Layer> pairs = (Entry<String, Layer>) it.next();
+    		if (pairs.getValue() instanceof TileDownloadLayer) {
+    			((TileDownloadLayer) pairs.getValue()).start();
+				debugMsg("Started layer " + pairs.getKey());
+    		}
     	}
     }
     
@@ -158,13 +162,15 @@ public class MapsforgeView extends TiUIView {
      * @param name
      */
     public void startLayer(String name) {
-    	Iterator<Entry<String, TileDownloadLayer>> it = mLayers.entrySet().iterator();
+    	Iterator<Entry<String, Layer>> it = mLayers.entrySet().iterator();
     	while (it.hasNext()) {
-    		Entry<String, TileDownloadLayer> pairs = (Entry<String, TileDownloadLayer>) it.next();
+    		Entry<String, Layer> pairs = (Entry<String, Layer>) it.next();
     		if (pairs.getKey().equals(name)) {
-    			pairs.getValue().start();
-    			debugMsg("Started layer " + pairs.getKey());
-    			return;
+    			if (pairs.getValue() instanceof TileDownloadLayer) {
+    				((TileDownloadLayer) pairs.getValue()).start();
+    				debugMsg("Started layer " + pairs.getKey());
+    				return;
+    			}
     		}
     	}
     	Log.e(TAG, "Could not find any layer named " + name + " to start!");
@@ -196,8 +202,9 @@ public class MapsforgeView extends TiUIView {
      * @param coordinates
      * @param color
      * @param strokeWidth
+     * @return identifier for the object.
      */
-    public void createPolyline(List<LatLong> coordinates, Color color, float strokeWidth) {
+    public int createPolyline(List<LatLong> coordinates, Color color, float strokeWidth) {
 		Paint paintStroke = mGraphicFactory.createPaint();
 		paintStroke.setStyle(Style.STROKE);
 		paintStroke.setColor(color);
@@ -207,6 +214,9 @@ public class MapsforgeView extends TiUIView {
 		pl.getLatLongs().addAll(coordinates);
 		MapView mapView = (MapView) getNativeView();
 		mapView.getLayerManager().getLayers().add(pl);
+		mLayers.put(Integer.toString(pl.hashCode()), pl);
+		
+		return pl.hashCode();
     }
     
     /**
@@ -215,8 +225,9 @@ public class MapsforgeView extends TiUIView {
      * @param fillColor
      * @param strokeColor
      * @param strokeWidth
+     * @return identifier for the object.
      */
-    public void createPolygon(List<LatLong> coordinates, Color fillColor, Color strokeColor, float strokeWidth) {
+    public int createPolygon(List<LatLong> coordinates, Color fillColor, Color strokeColor, float strokeWidth) {
     	Paint paintFill = mGraphicFactory.createPaint();
     	paintFill.setStyle(Style.FILL);
     	paintFill.setColor(fillColor);
@@ -230,6 +241,9 @@ public class MapsforgeView extends TiUIView {
     	pg.getLatLongs().addAll(coordinates);
 		MapView mapView = (MapView) getNativeView();
     	mapView.getLayerManager().getLayers().add(pg);
+    	mLayers.put(Integer.toString(pg.hashCode()), pg);
+    	
+    	return pg.hashCode();
     }
     
     /**
@@ -238,12 +252,15 @@ public class MapsforgeView extends TiUIView {
      * @param iconPath	Must be a URL or file system path on the device(i.e '/sdcard/marker.png').
      * @param horizontalOffset
      * @param verticalOffset
+     * @param iconWidth
+     * @param iconHeight
+     * @return identifier for the object.
      */
-    public void createMarker(LatLong pos, String iconPath, int horizontalOffset, int verticalOffset, int iconWidth, int iconHeight) {
+    public int createMarker(LatLong pos, String iconPath, int horizontalOffset, int verticalOffset, int iconWidth, int iconHeight) {
     	InputStream is = createInputStream(iconPath);
     	if (is == null) {
     		Log.e(TAG, "Unable to retrieve marker image. No marker drawn.");
-    		return;
+    		return -1;
     	}
     	
     	Bitmap icon = null;
@@ -252,7 +269,7 @@ public class MapsforgeView extends TiUIView {
 		} catch (IOException e) {
 			Log.e(TAG, "Unable to create bitmap. No marker drawn.");
 			Log.e(TAG, e.getMessage());
-			return;
+			return -1;
 		} finally {
 			IOUtils.closeQuietly(is);
 		}
@@ -264,6 +281,9 @@ public class MapsforgeView extends TiUIView {
 		Marker m = new Marker(pos, icon, horizontalOffset, verticalOffset);
 		MapView mapView = (MapView) getNativeView();
 		mapView.getLayerManager().getLayers().add(m);
+    	mLayers.put(Integer.toString(m.hashCode()), m);
+    	
+    	return m.hashCode();
     }
     
     /**
@@ -273,8 +293,9 @@ public class MapsforgeView extends TiUIView {
      * @param fillColor
      * @param strokeColor
      * @param strokeWidth
+     * @return identifier for the object.
      */
-    public void createCircle(LatLong latLong, float radius, Color fillColor, Color strokeColor, float strokeWidth) {
+    public int createCircle(LatLong latLong, float radius, Color fillColor, Color strokeColor, float strokeWidth) {
     	Paint paintFill = mGraphicFactory.createPaint();
     	paintFill.setColor(fillColor);
     	paintFill.setStyle(Style.FILL);
@@ -287,6 +308,9 @@ public class MapsforgeView extends TiUIView {
     	Circle c = new Circle(latLong, radius, paintFill, paintStroke);
 		MapView mapView = (MapView) getNativeView();
     	mapView.getLayerManager().getLayers().add(c);
+    	mLayers.put(Integer.toString(c.hashCode()), c);
+    	
+    	return c.hashCode();
     }
     
     private TileCache createTileCache(Activity activity, String name) {
