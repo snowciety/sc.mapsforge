@@ -184,6 +184,28 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	}
 	
 	/**
+	 * Remove a layer from the LayerManager using an identifier
+	 * @param id	the layer identifier.
+	 */
+	@Kroll.method
+	public void removeLayer(String id) {
+		if (mView.removeLayer(id)) {
+			debugMsg("Layer with id "+ id +" was removed");
+		} else {
+			Log.e(TAG, "Layer with id " + id + " could not bew removed!");
+		}
+	}
+	
+	/**
+	 * Remove a layer from the LayerManager using an identifier
+	 * @param id	the layer identifier.
+	 */
+	@Kroll.method
+	public void removeLayer(int id) {
+		removeLayer(Integer.toString(id));
+	}
+	
+	/**
 	 * Activates all tile layers.
 	 */
 	@Kroll.method
