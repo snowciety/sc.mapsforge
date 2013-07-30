@@ -100,6 +100,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	
 	/**
 	 * Returns the current center position as a double pair. [lat, lon]
+	 * @return the last set center position.
 	 */
 	@Kroll.getProperty @Kroll.method
 	public Double[] getCenterLatlng() {
@@ -121,7 +122,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	
 	/**
 	 * Returns the current zoom level of the map view.
-	 * @return	the current set zoom level
+	 * @return	the last set zoom level
 	 */
 	public int getZoomLevel() {
 		return mZoomLevel;
@@ -129,12 +130,13 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	
 	/**
 	 * Adds a bitmap tile layer to the map view.
-	 * Supported parameters:
-	 * name String
-	 * url String Must contain {z},{x} and {y} place holders.
-	 * subdomains StringArray
-	 * parallelRequests Integer
-	 * maxZoom	Integer
+	 * <br>
+	 * Supported parameters:<br>
+	 * name String<br>
+	 * url String Must contain {z},{x} and {y} place holders.<br>
+	 * subdomains StringArray<br>
+	 * parallelRequests Integer<br>
+	 * maxZoom	Integer<br>
 	 * minZoom Integer
 	 * @param args	dictionary with key-value pairs: {key:value}.
 	 */
@@ -217,9 +219,9 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * Update a layer currently in the LayerManager.
 	 * This method removes the current layer and replaces it with
 	 *  a new one.
-	 * Note! The old object is now useless and you need to update your
-	 * reference with the return value from this method!
-	 * Note! Only supports layers such as Polyline, Polygon etc.
+	 * <p>Note! The old object is now useless and you need to update your
+	 * reference with the return value from this method!</p>
+	 * <p>Note! Only supports layers such as Polyline, Polygon etc.</p>
 	 * @param dict	the layer as returned on creation.
 	 */
 	@Kroll.method
@@ -274,10 +276,10 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	}
 	
 	/**
-	 * Draws a polyline on the map view.
-	 * Supported parameters:
-	 * latlngs Array<Array<Integer> Like [ [45,12], [45,13] ]
-	 * color String Supported colors are: black, blue, green, red, transparent, white.
+	 * Draws a polyline on the map view.<br>
+	 * Supported parameters:<br>
+	 * latlngs Array&lt;Array&lt;Integer&gt;&gt; Like [ [45,12], [45,13] ]<br>
+	 * color String Supported colors are: black, blue, green, red, transparent, white.<br>
 	 * strokeWidth Integer
 	 * @param dict	dictionary with key-value pairs: {key:value}.
 	 */
@@ -305,11 +307,11 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	}
 	
 	/**
-	 * Draws a polygon on the map view.
-	 * Supported parameters:
-	 * latlngs Array<Array<Integer>> Like [ [45,12], [45,13] ]
-	 * fillColor String Supported colors are: black, blue, green, red, transparent, white.
-	 * strokeColor String Supported colors are: black, blue, green, red, transparent, white.
+	 * Draws a polygon on the map view.<br>
+	 * Supported parameters:<br>
+	 * latlngs Array&lt;Array&lt;Integer&gt;&gt; Like [ [45,12], [45,13] ]<br>
+	 * fillColor String Supported colors are: black, blue, green, red, transparent, white.<br>
+	 * strokeColor String Supported colors are: black, blue, green, red, transparent, white.<br>
 	 * strokeWidth Integer
 	 * @param dict	dictionary with key-value pairs: {key:value}.
 	 */
@@ -340,12 +342,12 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	}
 	
 	/**
-	 * Puts a marker on the map at a given position.
-	 * Supported parameters:
-	 * latlng Array<Integer> Like [45,13]
-	 * iconPath String Either a URL or a file system path on the device (i.e '/sdcard/myfile.png')
-	 * hOffset Integer Horizontal offset from position in pixels.
-	 * vOffset Integer Vertical offset from position in pixels.
+	 * Puts a marker on the map at a given position.<br>
+	 * Supported parameters:<br>
+	 * latlng Array&lt;Integer&gt; Like [45,13]<br>
+	 * iconPath String Either a URL or a file system path on the device (i.e '/sdcard/myfile.png')<br>
+	 * hOffset Integer Horizontal offset from position in pixels.<br>
+	 * vOffset Integer Vertical offset from position in pixels.<br>
 	 * @param dict	dictionary with key-value pairs: {key:value}.
 	 */
 	@Kroll.method
@@ -400,12 +402,12 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	}
 	
 	/**
-	 * Draws a circle on the map view.
-	 * Supported parameters:
-	 * latlng Array<Integer> Like [45,12]
-	 * fillColor String Supported colors are: black, blue, green, red, transparent, white.
-	 * strokeColor String Supported colors are: black, blue, green, red, transparent, white.
-	 * strokeWidth Integer
+	 * Draws a circle on the map view.<br>
+	 * Supported parameters:<br>
+	 * latlng Array&lt;Integer&gt; Like [45,12]<br>
+	 * fillColor String Supported colors are: black, blue, green, red, transparent, white.<br>
+	 * strokeColor String Supported colors are: black, blue, green, red, transparent, white.<br>
+	 * strokeWidth Integer<br>
 	 * radius Integer Radius of the circle in meters.
 	 * @param dict	dictionary with key-value pairs: {key:value}.
 	 */
