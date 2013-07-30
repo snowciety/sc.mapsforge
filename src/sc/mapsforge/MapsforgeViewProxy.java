@@ -109,7 +109,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	
 	/**
 	 * Sets the current zoom level for the map view.
-	 * @param zoomlevel	zoom level.
+	 * @param zoomLevel	zoom level.
 	 */
 	@Kroll.setProperty @Kroll.method
 	public void setZoomLevel(int zoomLevel) {
@@ -124,12 +124,13 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * Returns the current zoom level of the map view.
 	 * @return	the last set zoom level
 	 */
+	@Kroll.method
 	public int getZoomLevel() {
 		return mZoomLevel;
 	}
 	
 	/**
-	 * Adds a bitmap tile layer to the map view. 
+	 * <p>Adds a bitmap tile layer to the map view. </p>
 	 * By default an external cache (sdcard) is created.
 	 * <br>
 	 * Supported parameters:<br>
@@ -141,6 +142,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * minZoom Integer
 	 * @param args	dictionary with key-value pairs: {key:value}.
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Kroll.method
 	public void addLayer(HashMap args) {
 		KrollDict dict = new KrollDict(args);
@@ -217,7 +219,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	}
 	
 	/**
-	 * Update a layer currently in the LayerManager.
+	 * <p>Update a layer currently in the LayerManager.</p>
 	 * This method removes the current layer and replaces it with
 	 *  a new one.
 	 * <p>Note! The old object is now useless and you need to update your
@@ -260,7 +262,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	}
 	
 	/**
-	 * Draws a polyline on the map view.<br>
+	 * <p>Draws a polyline on the map view.</p>
 	 * Supported parameters:<br>
 	 * latlngs Array&lt;Array&lt;Integer&gt;&gt; Like [ [45,12], [45,13] ]<br>
 	 * color String Supported colors are: black, blue, green, red, transparent, white.<br>
@@ -291,7 +293,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	}
 	
 	/**
-	 * Draws a polygon on the map view.<br>
+	 * <p>Draws a polygon on the map view.</p>
 	 * Supported parameters:<br>
 	 * latlngs Array&lt;Array&lt;Integer&gt;&gt; Like [ [45,12], [45,13] ]<br>
 	 * fillColor String Supported colors are: black, blue, green, red, transparent, white.<br>
@@ -326,7 +328,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	}
 	
 	/**
-	 * Puts a marker on the map at a given position.<br>
+	 * <p>Puts a marker on the map at a given position.</p>
 	 * Supported parameters:<br>
 	 * latlng Array&lt;Integer&gt; Like [45,13]<br>
 	 * iconPath String Either a URL or a file system path on the device (i.e '/sdcard/myfile.png')<br>
@@ -386,7 +388,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	}
 	
 	/**
-	 * Draws a circle on the map view.<br>
+	 * <p>Draws a circle on the map view.</p>
 	 * Supported parameters:<br>
 	 * latlng Array&lt;Integer&gt; Like [45,12]<br>
 	 * fillColor String Supported colors are: black, blue, green, red, transparent, white.<br>
