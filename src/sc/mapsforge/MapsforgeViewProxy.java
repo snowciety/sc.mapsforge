@@ -129,7 +129,8 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	}
 	
 	/**
-	 * Adds a bitmap tile layer to the map view.
+	 * Adds a bitmap tile layer to the map view. 
+	 * By default an external cache (sdcard) is created.
 	 * <br>
 	 * Supported parameters:<br>
 	 * name String<br>
@@ -140,7 +141,6 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * minZoom Integer
 	 * @param args	dictionary with key-value pairs: {key:value}.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Kroll.method
 	public void addLayer(HashMap args) {
 		KrollDict dict = new KrollDict(args);
@@ -189,6 +189,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		}
 		
 		mView.addLayer(getActivity(), name, url, subdomains, parallelrequests, maxzoom, minzoom);
+		mView.startLayer(name);
 	}
 	
 	/**
@@ -256,23 +257,6 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		} else {
 			throw new UnknownError("The layer type " + dict.getString(KEY_LAYERTYPE) + " is not defined!");
 		}
-	}
-	
-	/**
-	 * Activates all tile layers.
-	 */
-	@Kroll.method
-	public void startLayers() {
-		mView.startLayers();
-	}
-	
-	/**
-	 * Activate a specific tile layer by its identifier 'name'.
-	 * @param name
-	 */
-	@Kroll.method
-	public void startLayer(String name) {
-		mView.startLayer(name);
 	}
 	
 	/**

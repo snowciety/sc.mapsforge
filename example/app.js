@@ -4,14 +4,16 @@ var win = Ti.UI.createWindow({
 
 var mf = require('sc.mapsforge');
 var mapView = mf.createMapsforgeView({ 
-	"scalebar": true, 
+	"scalebar": true,
+	"minZoom": 12, //Min zoom level for map view
+	"maxZoom": 18,  //Max zoom level for map view
 	"centerLatlng": [48.32, 14.79], //Unknown location
-	"zoomlevel": 18, //Bogus
+	"zoomlevel": 18, //Bogus initial zoom level
 	"debug": true });
 win.add(mapView);
 win.open();
-//Set center and zoom level on mapview using properties
-mapView.centerLatlng = [47.32, 12.79]; //Center at Zell am Zee
+//Set center and zoom level on map view using properties
+mapView.centerLatlng = [47.32, 12.79]; //Center at Zell am See
 mapView.zoomLevel = 12;
 /* 	
  * Layers etc have to be initialized after the window has been opened
@@ -25,8 +27,7 @@ mapView.addLayer({
 	"parallelRequests": 2,
 	"maxZoom": "18",
 	"minZoom": "12"
-	});
-mapView.startLayer("osm"); //All download layers can be started with .startLayers()
+});
 
 //Draw a blue line on the map...
 var polyline = mapView.createPolyline({

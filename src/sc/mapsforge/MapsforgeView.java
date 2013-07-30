@@ -49,6 +49,8 @@ public class MapsforgeView extends TiUIView {
 	private static final String KEY_SCALEBAR = "scalebar";
 	private static final String KEY_CENTER = "centerLatlng";
 	private static final String KEY_ZOOMLEVEL = "zoomlevel";
+	private static final String KEY_MINZOOM = "minZoom";
+	private static final String KEY_MAXZOOM = "maxZoom";
 
     private static final int TIMEOUT_CONNECT = 5000;
     private static final int TIMEOUT_READ = 10000;
@@ -84,6 +86,18 @@ public class MapsforgeView extends TiUIView {
 		if (props.containsKey(KEY_SCALEBAR)) {
 			mapView.getMapScaleBar().setVisible(props.getBoolean(KEY_SCALEBAR));
 			debugMsg("scalebar set to " + (props.getBoolean(KEY_SCALEBAR) ? "visible" : "hidden"));
+		}
+		
+		if (props.containsKey(KEY_MINZOOM)) {
+			int zoom = props.getInt(KEY_MINZOOM);
+			mapView.getModel().mapViewPosition.setZoomLevelMin((byte) zoom);
+			debugMsg("Min zoom level for map view set to " + Integer.toString(zoom));
+		}
+		
+		if (props.containsKey(KEY_MAXZOOM)) {
+			int zoom = props.getInt(KEY_MAXZOOM);
+			mapView.getModel().mapViewPosition.setZoomLevelMax((byte) zoom);
+			debugMsg("Max zoom level for map view set to " + Integer.toString(zoom));
 		}
 		
 		if (props.containsKey(KEY_CENTER)) {
@@ -184,7 +198,7 @@ public class MapsforgeView extends TiUIView {
     public void setCenter(double lat, double lon) {
 		MapView mapView = (MapView) getNativeView();
     	mapView.getModel().mapViewPosition.setCenter(new LatLong(lat, lon));
-		debugMsg("center set to " + Double.toString(lat) + " " + Double.toString(lon));
+		debugMsg("Center for map view set to " + Double.toString(lat) + " " + Double.toString(lon));
     }
     
     /**
@@ -194,7 +208,7 @@ public class MapsforgeView extends TiUIView {
     public void setZoomLevel(int zoomlevel) {
 		MapView mapView = (MapView) getNativeView();
     	mapView.getModel().mapViewPosition.setZoomLevel((byte) zoomlevel);
-		debugMsg("zoomlevel set to " + Integer.toString(zoomlevel));
+		debugMsg("Zoom level for map view set to " + Integer.toString(zoomlevel));
     }
     
     /**
