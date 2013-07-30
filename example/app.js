@@ -39,9 +39,12 @@ var polyline = mapView.createPolyline({
 	"strokeWidth": 5
 });
 Ti.API.info('Created polyline: ' + JSON.stringify(polyline));
-//..and change its color to red
+//..and change its color to red...
 polyline.color = "red";
+//...and then update the layer.
 polyline = mapView.updateLayer(polyline);
+//Note, that your previous reference is invalid and has
+//to be replaced with the new one returned from updateLayer()
 Ti.API.info('Updated polyline to: ' + JSON.stringify(polyline));
 
 //Draw a green polygon with a thick black stroke
