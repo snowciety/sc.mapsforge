@@ -215,6 +215,7 @@ public class MapsforgeView extends TiUIView {
 		MapView mapView = (MapView) getNativeView();
 		mapView.getLayerManager().getLayers().add(pl);
 		mLayers.put(Integer.toString(pl.hashCode()), pl);
+		mapView.getLayerManager().redrawLayers();
 		
 		return pl.hashCode();
     }
@@ -242,7 +243,8 @@ public class MapsforgeView extends TiUIView {
 		MapView mapView = (MapView) getNativeView();
     	mapView.getLayerManager().getLayers().add(pg);
     	mLayers.put(Integer.toString(pg.hashCode()), pg);
-    	
+		mapView.getLayerManager().redrawLayers();
+
     	return pg.hashCode();
     }
     
@@ -282,7 +284,8 @@ public class MapsforgeView extends TiUIView {
 		MapView mapView = (MapView) getNativeView();
 		mapView.getLayerManager().getLayers().add(m);
     	mLayers.put(Integer.toString(m.hashCode()), m);
-    	
+		mapView.getLayerManager().redrawLayers();
+
     	return m.hashCode();
     }
     
@@ -309,7 +312,8 @@ public class MapsforgeView extends TiUIView {
 		MapView mapView = (MapView) getNativeView();
     	mapView.getLayerManager().getLayers().add(c);
     	mLayers.put(Integer.toString(c.hashCode()), c);
-    	
+		mapView.getLayerManager().redrawLayers();
+
     	return c.hashCode();
     }
     
