@@ -4,3 +4,6 @@ Just as mapsforge, this module is in development.
 
 #Usage
 See the example app in "/example" for an overview of how this module can be used.
+
+#Doc
+JavaDoc documentation for the proxy can be found [here](http://snowciety.github.io/sc.mapsforge/sc/mapsforge/MapsforgeViewProxy.html#method_summary). This documentation together with the example application should hopefully give some insight on how the module is to be used.
