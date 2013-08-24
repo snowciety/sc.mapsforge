@@ -8,7 +8,7 @@ var mapView = mf.createMapsforgeView({
 	"minZoom": 12, //Min zoom level for map view
 	"maxZoom": 18,  //Max zoom level for map view
 	"centerLatlng": [48.32, 14.79], //Unknown location
-	"zoomlevel": 18, //Bogus initial zoom level
+	"zoomLevel": 18, //Bogus initial zoom level
 	"debug": true });
 win.add(mapView);
 win.open();
