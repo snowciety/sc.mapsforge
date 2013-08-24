@@ -138,7 +138,7 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	 * Returns the current zoom level of the map view.
 	 * @return	the last set zoom level
 	 */
-	@Kroll.method
+	@KRoll.getProperty @Kroll.method
 	public int getZoomLevel() {
 		return mZoomLevel;
 	}
