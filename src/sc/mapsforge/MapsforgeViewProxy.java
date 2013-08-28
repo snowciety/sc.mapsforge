@@ -83,6 +83,10 @@ public class MapsforgeViewProxy extends TiViewProxy {
 		mView.getLayoutParams().autoFillsHeight = true;
 		mView.getLayoutParams().autoFillsWidth = true;
 		
+		// Fire an event back to the JS side
+		// to signal that the view is ready
+		fireEvent("viewCreated", null);
+		
 		return mView;
 	}
 	
