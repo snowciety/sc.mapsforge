@@ -87,6 +87,12 @@ public class MapsforgeView extends TiUIView {
 		setNativeView(mapView);
 	}
 	
+	public void destroy(){
+		((MapView) getNativeView()).destroy();
+		mLayers = null;
+		mGraphicFactory = null;
+	}
+	
 	@Override
 	public void processProperties(KrollDict props) {
 		super.processProperties(props);

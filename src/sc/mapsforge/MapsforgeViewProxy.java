@@ -91,6 +91,12 @@ public class MapsforgeViewProxy extends TiViewProxy {
 	}
 	
 	@Override
+	public void releaseViews() {
+		mView.destroy();
+		super.releaseViews();
+	}
+	
+	@Override
 	public void handleCreationDict(KrollDict options) {
 		super.handleCreationDict(options);
 		if (options.containsKey(KEY_DEBUG)) {

@@ -17,9 +17,9 @@
 
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
+import org.appcelerator.kroll.common.Log;
 
 import org.appcelerator.titanium.TiApplication;
-import org.appcelerator.kroll.common.Log;
 
 import android.app.Activity;
 
@@ -29,9 +29,6 @@ public class MapsforgeModule extends KrollModule
 
 	// Standard Debugging variables
 	private static final String TAG = "MapsforgeModule";
-
-	// You can define constants with @Kroll.constant, for example:
-	// @Kroll.constant public static final String EXTERNAL_NAME = value;
 	
 	public MapsforgeModule()
 	{
