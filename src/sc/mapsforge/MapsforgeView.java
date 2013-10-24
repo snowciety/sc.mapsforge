@@ -293,9 +293,16 @@ public class MapsforgeView extends TiUIView {
      * @return identifier for the object.
      */
     public int createMarker(LatLong pos, String iconPath, int horizontalOffset, int verticalOffset, int iconWidth, int iconHeight) {
+    	debugMsg("pos: "            +pos.toString()+", " +
+    			"iconPath: "        +iconPath+", " +
+    			"horizontalOffset: "+Integer.toString(horizontalOffset)+", " +
+				"verticalOffset: "  +Integer.toString(verticalOffset)+", " +
+				"iconWidth: "       +Integer.toString(iconWidth)+", " +
+				"iconHeight: "      +Integer.toString(iconHeight));
+    	
     	InputStream is = createInputStream(iconPath);
     	if (is == null) {
-    		Log.e(TAG, "Unable to retrieve marker image. No marker drawn.");
+    		Log.e(TAG, "Unable to retrieve marker image from "+iconPath+". No marker drawn.");
     		return -1;
     	}
     	
